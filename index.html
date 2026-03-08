@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HFMDB v1.5</title>
+<title>HFMDB v1.6</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;500;600;700&family=Barlow:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
 <style>
@@ -178,6 +178,9 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;font
 .dot-dd-item.danger{color:#e74c3c}
 .dot-dd-item.danger:hover{background:rgba(192,57,43,.15)}
 
+/* list col headers */
+.lcol{padding:8px 5px;font-family:'Barlow Condensed',sans-serif;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);cursor:pointer;white-space:nowrap;user-select:none;flex-shrink:0;transition:color .15s}
+.lcol:hover{color:var(--orange)}
 /* ── LIST VIEW ── */
 #list-view{display:none}
 .list-filter-bar{display:flex;gap:5px;padding:8px 12px;background:var(--surface);border-bottom:1px solid var(--border);flex-wrap:wrap;position:sticky;top:0;z-index:3}
@@ -195,8 +198,37 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;font
 .lr-rt{width:50px;flex-shrink:0}
 .lr-rating{width:78px;flex-shrink:0}
 .lr-loc{width:104px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;color:var(--dim);flex-shrink:0}
-.lr-type{width:88px;flex-shrink:0}
+.lr-type{width:90px;flex-shrink:0}
+.lr-dir{width:120px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px;color:var(--dim)}
 
+
+/* ── TIMELINE VIEW ── */
+#timeline-view{padding:16px 22px;max-width:660px}
+.tl-year-group{margin-bottom:26px}
+.tl-year-lbl{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:3px;color:var(--orange);margin-bottom:10px;padding-left:22px}
+.tl-item{display:flex;position:relative;margin-bottom:2px}
+.tl-item::before{content:'';position:absolute;left:14px;top:0;bottom:0;width:1px;background:var(--border)}
+.tl-item:last-child::before{height:18px;bottom:auto}
+.tl-dot{width:29px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;padding-top:14px;position:relative;z-index:1}
+.tl-dot-inner{width:9px;height:9px;border-radius:50%;background:var(--border2);border:2px solid var(--bg);flex-shrink:0}
+.tl-dot-inner.has{background:var(--orange)}
+.tl-dot-inner.now{background:var(--orange);box-shadow:0 0 0 3px var(--og)}
+.tl-dot-inner.empty{width:7px;height:7px;background:var(--muted)}
+.tl-content{flex:1;padding:5px 0 12px 10px;min-width:0}
+.tl-datelbl{font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:1px;color:var(--muted);margin-bottom:3px}
+.tl-datelbl.movie{color:var(--dim)}
+.tl-card{background:var(--surface);border:1px solid var(--border);border-radius:5px;padding:10px 12px;cursor:pointer;transition:all .15s;display:flex;gap:10px;align-items:flex-start;margin-bottom:6px}
+.tl-card:hover{border-color:var(--border2);background:var(--surface2)}
+.tl-cposter{width:30px;height:44px;object-fit:cover;border-radius:2px;flex-shrink:0}
+.tl-cno{width:30px;height:44px;background:var(--surface3);border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:11px;opacity:.4;flex-shrink:0}
+.tl-cinfo{flex:1;min-width:0}
+.tl-ctitle{font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;line-height:1.2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tl-cmeta{display:flex;gap:6px;align-items:center;margin-top:4px;flex-wrap:wrap}
+.tl-cloc{font-size:10px;color:var(--dim);font-family:'Barlow Condensed',sans-serif}
+.tl-empty{padding:3px 0 10px 2px;font-family:'Barlow Condensed',sans-serif;font-size:11px;color:var(--muted)}
+/* ── RELEASE VIEW ── */
+#release-view{padding:14px 16px;display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:11px}
+.rel-yr-divider{grid-column:1/-1;font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:3px;color:var(--orange);padding:10px 0 4px;border-bottom:1px solid var(--border);margin-bottom:2px}
 /* ── STATS ── */
 #stats-view{padding:16px 20px;max-width:1100px;display:none}
 .stats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:12px;margin-bottom:18px}
@@ -330,22 +362,17 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;font
 <!-- SIDEBAR DRAWER -->
 <div id="sidebar">
   <div class="sb-head">
-    <div class="sb-logo"><span>💀</span><h1>HFMDB</h1></div>
     <button class="sb-close" onclick="closeSidebar()">✕</button>
   </div>
-  <div class="sb-stats">
-    <div class="sb-stat"><span class="ssv" id="s-total">—</span><span class="ssl">Films</span></div>
-    <div class="sb-stat"><span class="ssv" id="s-showing">—</span><span class="ssl">Showing</span></div>
-    <div class="sb-stat"><span class="ssv" id="s-avg">—</span><span class="ssl">Avg ★</span></div>
-    <div class="sb-stat"><span class="ssv" id="s-locs">—</span><span class="ssl">Venues</span></div>
-  </div>
   <div class="sb-sec">Views</div>
-  <div class="nav-item active" onclick="setView('now');closeSidebar()"   id="nv-now"><span class="nav-icon">📅</span>Now</div>
-  <div class="nav-item" onclick="setView('sheet');closeSidebar()" id="nv-sheet"><span class="nav-icon">📋</span>Sheet</div>
-  <div class="nav-item" onclick="setView('card');closeSidebar()"  id="nv-card"><span class="nav-icon">🎬</span>Cards</div>
-  <div class="nav-item" onclick="setView('list');closeSidebar()"  id="nv-list"><span class="nav-icon">📄</span>List</div>
-  <div class="nav-item" onclick="setView('stats');closeSidebar()" id="nv-stats"><span class="nav-icon">📊</span>Stats</div>
-  <div class="nav-item" onclick="setView('hof');closeSidebar()"   id="nv-hof"><span class="nav-icon">🏆</span>Hall of Fame</div>
+  <div class="nav-item active" onclick="setView('now');closeSidebar()"      id="nv-now"><span class="nav-icon">📅</span>Now</div>
+  <div class="nav-item" onclick="setView('sheet');closeSidebar()"    id="nv-sheet"><span class="nav-icon">📋</span>Sheet</div>
+  <div class="nav-item" onclick="setView('card');closeSidebar()"     id="nv-card"><span class="nav-icon">🎬</span>Cards</div>
+  <div class="nav-item" onclick="setView('list');closeSidebar()"     id="nv-list"><span class="nav-icon">📄</span>List</div>
+  <div class="nav-item" onclick="setView('timeline');closeSidebar()" id="nv-timeline"><span class="nav-icon">📆</span>Timeline</div>
+  <div class="nav-item" onclick="setView('release');closeSidebar()"  id="nv-release"><span class="nav-icon">🎞</span>Release</div>
+  <div class="nav-item" onclick="setView('stats');closeSidebar()"    id="nv-stats"><span class="nav-icon">📊</span>Stats</div>
+  <div class="nav-item" onclick="setView('hof');closeSidebar()"      id="nv-hof"><span class="nav-icon">🏆</span>Hall of Fame</div>
   <div class="sb-div"></div>
   <div class="sb-sec">Filters</div>
   <div class="sb-filters">
@@ -380,13 +407,12 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;font
       <div class="tb-logo">
         <span class="tb-skull">💀</span>
         <span class="tb-title">HFMDB</span>
-        <span class="tb-ver">v1.5</span>
+        <span class="tb-ver">v1.6</span>
       </div>
       <span class="admin-badge" id="admin-badge" style="display:none">⚡ ADMIN</span>
     </div>
     <div class="tb-right">
       <div class="search-wrap"><input type="text" class="search-box" id="search-box" placeholder="Search films…" oninput="applyFilters()"></div>
-      <!-- emoji view switcher -->
       <div class="view-switcher">
         <button class="view-btn" id="view-btn" onclick="toggleViewDropdown()">
           <span id="view-btn-icon">📅</span>
@@ -394,12 +420,14 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;font
           <span class="vb-arrow">▾</span>
         </button>
         <div class="view-dropdown" id="view-dropdown">
-          <div class="vd-item active" onclick="setView('now');closeViewDD()"   id="vdi-now"><span>📅</span>Now</div>
-          <div class="vd-item" onclick="setView('sheet');closeViewDD()" id="vdi-sheet"><span>📋</span>Sheet</div>
-          <div class="vd-item" onclick="setView('card');closeViewDD()"  id="vdi-card"><span>🎬</span>Cards</div>
-          <div class="vd-item" onclick="setView('list');closeViewDD()"  id="vdi-list"><span>📄</span>List</div>
-          <div class="vd-item" onclick="setView('stats');closeViewDD()" id="vdi-stats"><span>📊</span>Stats</div>
-          <div class="vd-item" onclick="setView('hof');closeViewDD()"   id="vdi-hof"><span>🏆</span>Hall of Fame</div>
+          <div class="vd-item active" onclick="setView('now');closeViewDD()"      id="vdi-now"><span>📅</span>Now</div>
+          <div class="vd-item" onclick="setView('sheet');closeViewDD()"    id="vdi-sheet"><span>📋</span>Sheet</div>
+          <div class="vd-item" onclick="setView('card');closeViewDD()"     id="vdi-card"><span>🎬</span>Cards</div>
+          <div class="vd-item" onclick="setView('list');closeViewDD()"     id="vdi-list"><span>📄</span>List</div>
+          <div class="vd-item" onclick="setView('timeline');closeViewDD()" id="vdi-timeline"><span>📆</span>Timeline</div>
+          <div class="vd-item" onclick="setView('release');closeViewDD()"  id="vdi-release"><span>🎞</span>Release</div>
+          <div class="vd-item" onclick="setView('stats');closeViewDD()"    id="vdi-stats"><span>📊</span>Stats</div>
+          <div class="vd-item" onclick="setView('hof');closeViewDD()"      id="vdi-hof"><span>🏆</span>Hall of Fame</div>
         </div>
       </div>
       <button class="add-btn" id="add-btn" onclick="openAdd()" style="display:none" title="Add Film">+</button>
@@ -453,8 +481,24 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;font
           <option>Thu</option><option>Fri</option><option>Sat</option><option>Sun</option>
         </select>
       </div>
+      <div id="list-col-heads" style="display:flex;background:var(--surface2);border-bottom:2px solid var(--orange);padding:0 12px;overflow-x:auto;flex-shrink:0;min-width:0">
+        <div class="lcol" style="width:34px" onclick="sortList('num')"># <span id="lsa-num"></span></div>
+        <div class="lcol" style="flex:1;min-width:140px" onclick="sortList('movie')">Movie <span id="lsa-movie"></span></div>
+        <div class="lcol" style="width:90px" onclick="sortList('date')">Date <span id="lsa-date"></span></div>
+        <div class="lcol" style="width:40px">DOTW</div>
+        <div class="lcol" style="width:44px" onclick="sortList('year')">Yr <span id="lsa-year"></span></div>
+        <div class="lcol" style="width:44px">MPAA</div>
+        <div class="lcol" style="width:54px" onclick="sortList('rt')">RT% <span id="lsa-rt"></span></div>
+        <div class="lcol" style="width:86px" onclick="sortList('rating')">Rating <span id="lsa-rating"></span></div>
+        <div class="lcol" style="width:110px" onclick="sortList('location')">Location <span id="lsa-location"></span></div>
+        <div class="lcol" style="width:90px">Type</div>
+        <div class="lcol" style="width:120px" onclick="sortList('director')">Director <span id="lsa-director"></span></div>
+        <div class="lcol" style="width:100px">Event</div>
+      </div>
       <div id="list-body"></div>
     </div>
+    <div id="timeline-view" style="display:none"></div>
+    <div id="release-view"  style="display:none"></div>
     <div id="stats-view" style="display:none"></div>
     <div id="hof-view"   style="display:none"></div>
   </div>
@@ -521,6 +565,7 @@ const VIEWS=[
 ];
 
 let movies=[],filtered=[],listFiltered=[];
+let listSortCol='num',listSortDir=1;
 let isAdmin=false,view='now',sortCol='num',sortDir=1,page=1,pgSize=100;
 let editingId=null,deleteId=null;
 
@@ -546,8 +591,6 @@ async function loadMovies(){
     const yrs=[...new Set(movies.map(m=>{const x=m.date&&m.date.match(/\d{4}/);return x?x[0]:null}).filter(Boolean))].sort();
     const lfy=document.getElementById('lf-yr');
     yrs.forEach(y=>{const o=document.createElement('option');o.value=y;o.textContent=y;lfy.appendChild(o);});
-    document.getElementById('s-total').textContent=movies.length;
-    document.getElementById('s-locs').textContent=[...new Set(movies.map(m=>m.location).filter(Boolean))].length;
     document.getElementById('loader').style.display='none';
     applyFilters();
   }catch(e){
@@ -594,6 +637,23 @@ function applyFilters(){
   page=1;updateStats();render();
 }
 
+
+function sortList(col){
+  if(listSortCol===col)listSortDir*=-1;else{listSortCol=col;listSortDir=1;}
+  document.querySelectorAll('[id^="lsa-"]').forEach(e=>e.textContent='');
+  const el=document.getElementById('lsa-'+col);if(el)el.textContent=listSortDir===1?' ↑':' ↓';
+  sortListData();renderList();renderPagination();
+}
+function sortListData(){
+  listFiltered.sort((a,b)=>{
+    let av=a[listSortCol]??'',bv=b[listSortCol]??'';
+    if(['num','year'].includes(listSortCol)){av=parseFloat(av)||0;bv=parseFloat(bv)||0;}
+    else if(listSortCol==='rt'){av=parseInt(av)||0;bv=parseInt(bv)||0;}
+    else if(listSortCol==='rating'){av=parseFloat(av)||0;bv=parseFloat(bv)||0;}
+    else if(listSortCol==='date'){av=parseDV(a.watch_date||a.date);bv=parseDV(b.watch_date||b.date);}
+    if(av<bv)return -listSortDir;if(av>bv)return listSortDir;return 0;
+  });
+}
 function applyListFilters(){
   const loc=document.getElementById('lf-loc').value;
   const mpaa=document.getElementById('lf-mpaa').value;
@@ -614,6 +674,7 @@ function applyListFilters(){
     if(dotw&&getDOTW(m)!==dotw)return false;
     return true;
   });
+  sortListData();
   page=1;renderList();renderPagination();
 }
 
@@ -636,17 +697,17 @@ function sortBy(col){
 
 // ── RENDER ──
 function render(){
-  ['now','sheet','card','list','stats','hof'].forEach(v=>{
-    const el=document.getElementById(v+'-view');if(el)el.style.display='none';
-  });
+  ALL_VIEWS.forEach(v=>{const el=document.getElementById(v.id+'-view');if(el)el.style.display='none';});
   const el=document.getElementById(view+'-view');
-  if(el)el.style.display=view==='card'?'grid':'block';
+  if(el)el.style.display=['card','release'].includes(view)?'grid':'block';
   const hasPag=['sheet','card','list'].includes(view);
   document.getElementById('pagination').style.display='flex';
   if(view==='now')renderNow();
   else if(view==='sheet')renderSheet();
   else if(view==='card')renderCards();
   else if(view==='list'){listFiltered=[...filtered];applyListFilters();return;}
+  else if(view==='timeline')renderTimeline();
+  else if(view==='release')renderRelease();
   else if(view==='stats')renderStats();
   else if(view==='hof')renderHOF();
   if(hasPag)renderPagination();
@@ -787,10 +848,106 @@ function renderList(){
       <div class="lr-rating">${starsH(m.rating)}</div>
       <div class="lr-loc">${m.location&&m.location!=='---'&&m.location!=='NONE'?m.location:''}</div>
       <div class="lr-type">${m.type?`<span class="type-badge">${m.type}</span>`:''}</div>
+      <div class="lr-dir">${m.director||''}</div>
+      <div class="lr-event" style="width:100px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px;color:var(--orange);font-style:italic">${m.event||''}</div>
     </div>`).join('');
 }
 
 // ── STATS ──
+
+function renderTimeline(){
+  const tv=document.getElementById('timeline-view');
+  const today=new Date();today.setHours(0,0,0,0);
+  const thisMonday=getMondayOf(today);
+  const MONTHS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const dateMap={};
+  movies.forEach(m=>{
+    const dv=m.watch_date||m.date;if(!dv)return;
+    let dt;
+    if(/^\d{4}-\d{2}-\d{2}/.test(dv))dt=new Date(dv+'T12:00:00');
+    else if(/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(dv)){const[mo,dy,yr]=dv.split('/');dt=new Date(+yr,+mo-1,+dy,12);}
+    else return;
+    dt.setHours(0,0,0,0);
+    const key=dt.toISOString().slice(0,10);
+    if(!dateMap[key])dateMap[key]=[];
+    dateMap[key].push(m);
+  });
+  const allDates=Object.keys(dateMap).sort();
+  if(!allDates.length){tv.innerHTML='<div class="empty" style="margin-top:60px"><div class="es">📆</div><p>NO DATA</p></div>';return;}
+  const firstDate=new Date(allDates[0]+'T12:00:00');
+  const startMonday=getMondayOf(firstDate);
+  const lastMovie=new Date(allDates[allDates.length-1]+'T12:00:00');
+  const endMonday=getMondayOf(today>lastMovie?today:lastMovie);
+  const allMondays=[];
+  let cur=new Date(startMonday);
+  while(cur<=endMonday){allMondays.push(new Date(cur));cur.setDate(cur.getDate()+7);}
+  allMondays.reverse();
+  // group by year
+  const byYear={};
+  allMondays.forEach(m=>{const yr=m.getFullYear();if(!byYear[yr])byYear[yr]=[];byYear[yr].push(m);});
+  const years=Object.keys(byYear).sort((a,b)=>b-a);
+
+  function mondayBlock(monday){
+    const key=monday.toISOString().slice(0,10);
+    const ms=dateMap[key]||[];
+    const isNow=thisMonday.getTime()===monday.getTime();
+    const dw=DOTW_NAMES[monday.getDay()];
+    const disp=MONTHS[monday.getMonth()]+' '+monday.getDate();
+    if(!ms.length){
+      return`<div class="tl-item">
+        <div class="tl-dot"><div class="tl-dot-inner empty ${isNow?'now':''}"></div></div>
+        <div class="tl-content"><div class="tl-empty">${disp} ${dw}${isNow?' ← This Week':''}</div></div>
+      </div>`;
+    }
+    return`<div class="tl-item">
+      <div class="tl-dot"><div class="tl-dot-inner has ${isNow?'now':''}"></div></div>
+      <div class="tl-content">
+        <div class="tl-datelbl movie">${disp} · ${dw}${isNow?' ← This Week':''}</div>
+        ${ms.map(m=>`<div class="tl-card" onclick="openDetail(${m.id})">
+          ${m.poster_url?`<img class="tl-cposter" src="${m.poster_url}" loading="lazy" onerror="this.outerHTML='<div class=tl-cno>🎬</div>'">`:`<div class="tl-cno">🎬</div>`}
+          <div class="tl-cinfo">
+            <div class="tl-ctitle">${m.movie} ${m.year?`<span style="color:var(--muted);font-size:11px">(${m.year})</span>`:''}</div>
+            <div class="tl-cmeta">${rtH(m.rt)} ${starsH(m.rating)} ${m.location&&m.location!=='---'&&m.location!=='NONE'?`<span class="tl-cloc">📍 ${m.location}</span>`:''} ${mpaaH(m.mpaa)}</div>
+          </div>
+        </div>`).join('')}
+      </div>
+    </div>`;
+  }
+  tv.innerHTML=years.map(yr=>`
+    <div class="tl-year-group">
+      <div class="tl-year-lbl">${yr}</div>
+      ${byYear[yr].map(mondayBlock).join('')}
+    </div>`).join('');
+}
+
+function renderRelease(){
+  const rv=document.getElementById('release-view');
+  const hasYear=[...filtered].filter(m=>m.year&&/^\d{4}$/.test(m.year.toString()))
+    .sort((a,b)=>(parseInt(b.year)||0)-(parseInt(a.year)||0)||(a.movie||'').localeCompare(b.movie||''));
+  const noYear=[...filtered].filter(m=>!m.year||!/^\d{4}$/.test(m.year.toString()));
+  const all=[...hasYear,...noYear];
+  if(!all.length){rv.innerHTML='<div class="empty"><div class="es">🎞</div><p>NO FILMS FOUND</p></div>';return;}
+  let lastYr=null;
+  rv.innerHTML=all.map(m=>{
+    const yr=m.year&&/^\d{4}$/.test(m.year.toString())?m.year:'Unknown';
+    let div='';
+    if(yr!==lastYr){lastYr=yr;div=`<div class="rel-yr-divider">${yr}</div>`;}
+    return div+`<div class="movie-card" onclick="openDetail(${m.id})">
+      ${m.type?`<div class="card-type-badge">${m.type}</div>`:''}
+      ${m.poster_url?`<img class="card-poster" src="${m.poster_url}" loading="lazy" onclick="event.stopPropagation();openLightbox('${m.poster_url}')" onerror="this.outerHTML='<div class=card-no-poster><div class=cnp-skull>💀</div><div class=cnp-title>${esc(m.movie)}</div></div>'">`:`<div class="card-no-poster"><div class="cnp-skull">💀</div><div class="cnp-title">${m.movie}</div></div>`}
+      <div class="card-body">
+        <div class="card-num">${m.date?'📅 '+m.date:''}</div>
+        <div class="card-title">${m.movie}</div>
+        <div class="card-meta">${rtH(m.rt)} ${mpaaH(m.mpaa)}</div>
+        <div style="margin-bottom:4px">${starsH(m.rating)}</div>
+        <div class="card-bot">
+          <span class="card-loc">${m.location&&m.location!=='---'&&m.location!=='NONE'?'📍 '+m.location:''}</span>
+          <span class="card-date">${m.year||''}</span>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
 function renderStats(){
   const sv=document.getElementById('stats-view');const ms=movies;
   const grp=(xf)=>{const map={};ms.forEach(m=>{const k=xf(m);if(!k||k==='---'||k==='NONE'||k==='')return;map[k]=(map[k]||0)+1;});return Object.entries(map).sort((a,b)=>b[1]-a[1]);};
@@ -831,6 +988,13 @@ function renderStats(){
 }
 
 // ── HOF ──
+
+function hofJumpToList(title){
+  // Set search box to the movie title and switch to list view
+  document.getElementById('search-box').value=title;
+  applyFilters();
+  setView('list');
+}
 function renderHOF(){
   const hv=document.getElementById('hof-view');
   const tm={};movies.forEach(m=>{if(!m.movie||m.movie==='??'||m.movie==='---')return;const k=m.movie.toLowerCase().trim();if(!tm[k])tm[k]={title:m.movie,count:0,dates:[],rating:0,rt:0,poster:null};tm[k].count++;const yr=m.date&&m.date.match(/\d{4}/);if(yr)tm[k].dates.push(yr[0]);if(m.rating&&parseFloat(m.rating)>tm[k].rating)tm[k].rating=parseFloat(m.rating);if(m.rt&&parseInt(m.rt)>tm[k].rt)tm[k].rt=parseInt(m.rt);if(!tm[k].poster&&m.poster_url)tm[k].poster=m.poster_url;});
@@ -838,7 +1002,7 @@ function renderHOF(){
   if(!hof.length){hv.innerHTML='<div class="empty" style="margin-top:60px"><div class="es">🏆</div><p>NO REWATCHES YET</p></div>';return;}
   hv.innerHTML=`<div class="hof-hdr"><h2>🏆 HALL OF FAME</h2><p>Films watched more than once · sorted by most rewatched</p></div>
     <div class="hof-grid">${hof.map((m,i)=>`
-      <div class="hof-card">
+      <div class="hof-card" onclick="hofJumpToList('${esc(m.title)}')">
         <div class="hof-rank ${i<3?'top3':''}">${i+1}</div>
         ${m.poster?`<img src="${m.poster}" style="width:42px;height:62px;object-fit:cover;border-radius:3px;flex-shrink:0" loading="lazy">`:`<div style="width:42px;height:62px;background:var(--surface3);border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:15px;opacity:.4;flex-shrink:0">💀</div>`}
         <div class="hof-info">
@@ -874,13 +1038,19 @@ function goPage(p){const src=view==='list'?listFiltered:filtered;const t=Math.ce
 function changePgSize(v){pgSize=parseInt(v);page=1;render();}
 
 // ── VIEWS / SIDEBAR / DROPDOWN ──
+const ALL_VIEWS=[
+  {id:'now',icon:'📅',label:'Now'},{id:'sheet',icon:'📋',label:'Sheet'},
+  {id:'card',icon:'🎬',label:'Cards'},{id:'list',icon:'📄',label:'List'},
+  {id:'timeline',icon:'📆',label:'Timeline'},{id:'release',icon:'🎞',label:'Release'},
+  {id:'stats',icon:'📊',label:'Stats'},{id:'hof',icon:'🏆',label:'Hall of Fame'},
+];
 function setView(v){
   view=v;
-  ['now','sheet','card','list','stats','hof'].forEach(x=>{
-    document.getElementById('nv-'+x).classList.toggle('active',x===v);
-    document.getElementById('vdi-'+x).classList.toggle('active',x===v);
+  ALL_VIEWS.forEach(x=>{
+    const nv=document.getElementById('nv-'+x.id);if(nv)nv.classList.toggle('active',x.id===v);
+    const vdi=document.getElementById('vdi-'+x.id);if(vdi)vdi.classList.toggle('active',x.id===v);
   });
-  const vd=VIEWS.find(x=>x.id===v);
+  const vd=ALL_VIEWS.find(x=>x.id===v);
   if(vd){document.getElementById('view-btn-icon').textContent=vd.icon;document.getElementById('view-btn-label').textContent=vd.label;}
   page=1;render();
 }
@@ -907,7 +1077,7 @@ function checkPin(){
 }
 function closePinModal(){document.getElementById('pin-modal').style.display='none';}
 function updateAdminUI(){
-  document.getElementById('admin-badge').style.display=isAdmin?'inline-block':'none';
+  const ab=document.getElementById('admin-badge');if(ab)ab.style.display='none'; // removed from topbar
   document.getElementById('add-btn').style.display=isAdmin?'flex':'none';
   document.getElementById('admin-btn').classList.toggle('on',isAdmin);
   document.getElementById('admin-lbl').textContent=isAdmin?'Logout Admin':'Admin Login';
