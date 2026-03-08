@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HFMDB v1.4</title>
+<title>HFMDB v1.5</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;500;600;700&family=Barlow:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
 <style>
@@ -14,57 +14,81 @@
   --green:#27ae60;--green-bg:rgba(39,174,96,.12);
   --yellow:#e6a817;--yellow-bg:rgba(230,168,23,.12);
   --text:#efefef;--dim:#888;--muted:#444;
-  --sw:230px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;overflow:hidden}
-body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;font-size:14px;display:flex}
+body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;font-size:14px}
 
-/* ── SIDEBAR ── */
-#sidebar{width:var(--sw);background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto;overflow-x:hidden;transition:width .22s ease;position:relative;z-index:10}
-#sidebar.collapsed{width:52px}
-#sidebar.collapsed .sb-hide{display:none!important}
-#sidebar.collapsed .nav-item{justify-content:center;padding:12px 0}
-.sb-top{display:flex;align-items:center;justify-content:flex-end;padding:10px 10px;border-bottom:1px solid var(--border);flex-shrink:0}
-.sb-toggle{background:transparent;border:1px solid var(--border);color:var(--dim);width:28px;height:28px;border-radius:4px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s}
-.sb-toggle:hover{border-color:var(--orange);color:var(--orange)}
-.sb-stats{padding:10px 12px;border-bottom:1px solid var(--border);display:grid;grid-template-columns:1fr 1fr;gap:6px}
+/* ── DRAWER SIDEBAR (overlay) ── */
+#drawer-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:100;display:none;backdrop-filter:blur(2px)}
+#drawer-overlay.open{display:block}
+#sidebar{
+  position:fixed;top:0;left:0;bottom:0;width:248px;
+  background:var(--surface);border-right:1px solid var(--border);
+  display:flex;flex-direction:column;
+  z-index:101;
+  transform:translateX(-100%);
+  transition:transform .24s cubic-bezier(.4,0,.2,1);
+  overflow-y:auto;overflow-x:hidden;
+}
+#sidebar.open{transform:translateX(0)}
+.sb-head{display:flex;align-items:center;justify-content:space-between;padding:14px 14px 12px;border-bottom:1px solid var(--border);flex-shrink:0}
+.sb-logo{display:flex;align-items:center;gap:8px}
+.sb-logo span{font-size:20px}
+.sb-logo h1{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:var(--orange);line-height:1}
+.sb-close{background:transparent;border:1px solid var(--border);color:var(--dim);width:28px;height:28px;border-radius:4px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0}
+.sb-close:hover{border-color:var(--orange);color:var(--orange)}
+.sb-stats{padding:10px 14px;border-bottom:1px solid var(--border);display:grid;grid-template-columns:1fr 1fr;gap:6px}
 .sb-stat{display:flex;flex-direction:column;gap:1px}
-.ssv{font-family:'Bebas Neue',sans-serif;font-size:19px;color:var(--orange);letter-spacing:1px;line-height:1}
+.ssv{font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--orange);letter-spacing:1px;line-height:1}
 .ssl{font-family:'Barlow Condensed',sans-serif;font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase}
-.sb-sec{padding:10px 12px 4px;font-family:'Barlow Condensed',sans-serif;font-size:9px;letter-spacing:2.5px;color:var(--muted);text-transform:uppercase}
-.nav-item{display:flex;align-items:center;gap:9px;padding:9px 12px;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:500;letter-spacing:.4px;color:var(--dim);transition:all .15s;border-left:3px solid transparent;white-space:nowrap}
+.sb-sec{padding:10px 14px 4px;font-family:'Barlow Condensed',sans-serif;font-size:9px;letter-spacing:2.5px;color:var(--muted);text-transform:uppercase}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:500;letter-spacing:.4px;color:var(--dim);transition:all .15s;border-left:3px solid transparent;white-space:nowrap}
 .nav-item:hover{background:var(--surface2);color:var(--text)}
 .nav-item.active{color:var(--orange);border-left-color:var(--orange);background:var(--og)}
 .nav-icon{font-size:15px;width:18px;text-align:center;flex-shrink:0}
 .sb-div{height:1px;background:var(--border);margin:5px 0}
-.sb-filters{padding:0 12px 12px}
+.sb-filters{padding:0 14px 14px}
 .fl{font-family:'Barlow Condensed',sans-serif;font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;display:block;margin:9px 0 4px}
 .f-sel,.f-inp{width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:6px 8px;border-radius:4px;font-family:'Barlow',sans-serif;font-size:12px;outline:none;appearance:none;-webkit-appearance:none}
 .f-sel:focus,.f-inp:focus{border-color:var(--orange)}
 .f-sel option{background:#1a1a1a}
 .btn-clr{width:100%;margin-top:8px;padding:6px;background:transparent;border:1px solid var(--border);color:var(--dim);font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:1px;cursor:pointer;border-radius:4px;text-transform:uppercase;transition:all .15s}
 .btn-clr:hover{border-color:var(--orange);color:var(--orange)}
-.sb-admin{margin-top:auto;padding:12px;border-top:1px solid var(--border)}
-.admin-btn{width:100%;padding:7px 8px;background:transparent;border:1px solid var(--border);color:var(--dim);font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:1px;cursor:pointer;border-radius:4px;transition:all .2s;text-transform:uppercase;display:flex;align-items:center;gap:6px;justify-content:center}
+.sb-admin{margin-top:auto;padding:12px 14px;border-top:1px solid var(--border);flex-shrink:0}
+.admin-btn{width:100%;padding:8px 10px;background:transparent;border:1px solid var(--border);color:var(--dim);font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:1px;cursor:pointer;border-radius:4px;transition:all .2s;text-transform:uppercase;display:flex;align-items:center;gap:8px;justify-content:center}
 .admin-btn:hover{border-color:var(--orange);color:var(--orange)}
 .admin-btn.on{background:var(--og);border-color:var(--orange);color:var(--orange)}
 
-/* ── TOPBAR ── */
-#main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
-#topbar{padding:8px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--surface);flex-shrink:0;gap:10px}
-.tb-left{display:flex;align-items:center;gap:10px}
+/* ── MAIN (always full width) ── */
+#main{display:flex;flex-direction:column;height:100%;overflow:hidden}
+#topbar{padding:8px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--surface);flex-shrink:0;gap:8px}
+.tb-left{display:flex;align-items:center;gap:8px}
+.tb-menu-btn{background:transparent;border:1px solid var(--border);color:var(--dim);width:30px;height:30px;border-radius:4px;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0}
+.tb-menu-btn:hover{border-color:var(--orange);color:var(--orange)}
 .tb-logo{display:flex;align-items:center;gap:6px}
 .tb-skull{font-size:18px;line-height:1}
 .tb-title{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;color:var(--orange);line-height:1}
 .tb-ver{font-family:'Barlow Condensed',sans-serif;font-size:9px;letter-spacing:2px;color:var(--muted);align-self:flex-end;margin-bottom:1px}
 .admin-badge{background:var(--og);border:1px solid var(--orange);color:var(--orange);font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:2px;padding:2px 7px;border-radius:3px;text-transform:uppercase;white-space:nowrap}
-.tb-right{display:flex;gap:8px;align-items:center;flex-shrink:0}
+.tb-right{display:flex;gap:6px;align-items:center;flex-shrink:0}
 .search-wrap{position:relative}
 .search-wrap::before{content:'🔍';position:absolute;left:8px;top:50%;transform:translateY(-50%);font-size:11px;pointer-events:none}
-.search-box{background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:6px 10px 6px 27px;border-radius:4px;font-family:'Barlow',sans-serif;font-size:13px;outline:none;width:180px}
+.search-box{background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:6px 10px 6px 27px;border-radius:4px;font-family:'Barlow',sans-serif;font-size:13px;outline:none;width:170px}
 .search-box:focus{border-color:var(--orange)}
-.add-btn{width:30px;height:30px;background:var(--orange);border:none;color:#fff;font-size:22px;font-weight:300;cursor:pointer;border-radius:6px;display:flex;align-items:center;justify-content:center;transition:background .15s;flex-shrink:0;line-height:1;padding-bottom:1px}
+
+/* emoji view switcher */
+.view-switcher{position:relative}
+.view-btn{background:var(--surface2);border:1px solid var(--border);color:var(--text);height:30px;padding:0 10px;border-radius:4px;cursor:pointer;font-size:15px;display:flex;align-items:center;gap:5px;transition:all .15s;white-space:nowrap;font-family:'Barlow Condensed',sans-serif;font-size:13px}
+.view-btn:hover{border-color:var(--orange)}
+.view-btn .vb-arrow{font-size:9px;color:var(--dim)}
+.view-dropdown{position:absolute;top:34px;right:0;background:var(--surface2);border:1px solid var(--border2);border-radius:6px;z-index:60;min-width:150px;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,.6);display:none}
+.view-dropdown.open{display:block}
+.vd-item{display:flex;align-items:center;gap:9px;padding:10px 14px;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-size:14px;color:var(--dim);transition:background .1s;white-space:nowrap}
+.vd-item:hover{background:var(--surface3);color:var(--text)}
+.vd-item.active{color:var(--orange);background:var(--og)}
+
+.add-btn{width:30px;height:30px;background:var(--orange);border:none;color:#fff;font-size:20px;cursor:pointer;border-radius:5px;display:flex;align-items:center;justify-content:center;transition:background .15s;flex-shrink:0;line-height:1;padding-bottom:1px}
 .add-btn:hover{background:var(--orange2)}
 
 /* ── CONTENT ── */
@@ -75,160 +99,169 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;font
 .l-txt{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:4px;color:var(--orange)}
 
 /* ── NOW VIEW ── */
-#now-view{padding:18px 22px;max-width:860px}
-.now-section{margin-bottom:22px}
-.now-section-title{font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:3px;color:var(--muted);text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+#now-view{padding:18px 20px;max-width:820px}
+.now-section{margin-bottom:20px}
+.now-section-title{font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:3px;color:var(--muted);text-transform:uppercase;margin-bottom:9px;display:flex;align-items:center;gap:8px}
 .now-section-title span{height:1px;flex:1;background:var(--border)}
-.now-week{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:14px 16px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:all .18s;position:relative}
+.now-week{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:12px 14px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:all .18s;position:relative;margin-bottom:6px}
 .now-week:hover{border-color:var(--border2);background:var(--surface2)}
+.now-week:last-child{margin-bottom:0}
 .now-week.this-week{border-color:var(--orange);background:rgba(232,98,26,.05)}
-.now-week.this-week::before{content:'THIS WEEK';position:absolute;top:-9px;left:14px;background:var(--orange);color:#fff;font-family:'Bebas Neue',sans-serif;font-size:10px;letter-spacing:2px;padding:1px 8px;border-radius:2px}
-.now-week.future{border-color:var(--border);opacity:.7}
+.now-week.this-week::before{content:'THIS WEEK';position:absolute;top:-9px;left:12px;background:var(--orange);color:#fff;font-family:'Bebas Neue',sans-serif;font-size:10px;letter-spacing:2px;padding:1px 7px;border-radius:2px}
+.now-week.future{opacity:.65}
 .now-week.future:hover{opacity:1}
-.nw-date{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--dim);letter-spacing:1px;min-width:90px;line-height:1}
-.nw-date.this-week{color:var(--orange)}
+.now-week.no-film{cursor:default}
+.nw-date{font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--dim);letter-spacing:1px;min-width:82px;line-height:1}
+.nw-date.hl{color:var(--orange)}
 .nw-dotw{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-top:2px}
-.nw-poster{width:36px;height:54px;object-fit:cover;border-radius:3px;flex-shrink:0}
-.nw-no-poster{width:36px;height:54px;background:var(--surface3);border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:14px;opacity:.4;flex-shrink:0}
+.nw-poster{width:34px;height:50px;object-fit:cover;border-radius:3px;flex-shrink:0}
+.nw-no-poster{width:34px;height:50px;background:var(--surface3);border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:13px;opacity:.4;flex-shrink:0}
 .nw-info{flex:1;min-width:0}
-.nw-movie{font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:700;line-height:1.2;color:var(--text)}
+.nw-movie{font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;line-height:1.2;color:var(--text)}
 .nw-movie.tbd{color:var(--muted);font-style:italic;font-weight:400}
-.nw-meta{display:flex;gap:8px;align-items:center;margin-top:5px;flex-wrap:wrap}
+.nw-meta{display:flex;gap:7px;align-items:center;margin-top:4px;flex-wrap:wrap}
 .nw-loc{font-size:11px;color:var(--dim);font-family:'Barlow Condensed',sans-serif}
-.nw-num{font-family:'Bebas Neue',sans-serif;font-size:12px;color:var(--muted);letter-spacing:1px;min-width:32px;text-align:right;flex-shrink:0}
+.nw-num{font-family:'Bebas Neue',sans-serif;font-size:12px;color:var(--muted);letter-spacing:1px;flex-shrink:0}
 
-/* ── SHEET VIEW ── */
-#sheet-view{min-width:900px}
+/* ── SHEET ── */
+#sheet-view{min-width:860px}
 .sheet-table{width:100%;border-collapse:collapse;font-family:'Barlow Condensed',sans-serif;font-size:13px}
 .sheet-table thead th{background:var(--surface2);padding:9px 10px;text-align:left;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);border-bottom:2px solid var(--orange);white-space:nowrap;position:sticky;top:0;z-index:2;cursor:pointer;user-select:none;transition:color .15s}
-.sheet-table thead th:hover,.sheet-table thead th.sorted{color:var(--orange)}
+.sheet-table thead th:hover{color:var(--orange)}
 .sort-arr{font-size:10px;margin-left:2px}
 .sheet-table tbody tr{border-bottom:1px solid var(--border);transition:background .1s;cursor:pointer}
 .sheet-table tbody tr:hover{background:var(--og)}
 .sheet-table td{padding:7px 10px;white-space:nowrap;vertical-align:middle}
-.td-num{color:var(--muted);font-size:11px;width:34px}
-.td-poster img{width:26px;height:38px;object-fit:cover;border-radius:2px;display:block}
+.td-num{color:var(--muted);font-size:11px;width:32px}
+.td-poster img{width:26px;height:38px;object-fit:cover;border-radius:2px;display:block;cursor:zoom-in}
 .td-poster .np{width:26px;height:38px;background:var(--surface3);border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:11px}
-.td-movie{font-weight:700;font-size:14px;max-width:200px;overflow:hidden;text-overflow:ellipsis}
-.td-date,.td-year{color:var(--dim);font-size:12px}
-.td-dotw{color:var(--dim);font-size:12px;font-family:'Barlow Condensed',sans-serif;letter-spacing:.5px}
+.td-movie{font-weight:700;font-size:14px;max-width:190px;overflow:hidden;text-overflow:ellipsis}
+.td-date,.td-year,.td-dotw{color:var(--dim);font-size:12px}
 .rt-pill{display:inline-block;padding:2px 7px;border-radius:10px;font-size:11px;font-weight:700;font-family:'Barlow Condensed',sans-serif}
 .rt-hi{background:var(--green-bg);color:var(--green)}
 .rt-mid{background:var(--yellow-bg);color:var(--yellow)}
 .rt-lo{background:rgba(192,57,43,.15);color:#e74c3c}
 .rt-none{color:var(--muted);font-style:italic;font-size:11px}
 .stars{color:var(--orange);font-size:13px;letter-spacing:-1px}
-.mpaa-badge{display:inline-block;padding:1px 5px;border:1px solid var(--border2);border-radius:2px;font-size:10px;font-weight:700;color:var(--dim);font-family:'Barlow Condensed',sans-serif}
+.mpaa-badge{display:inline-block;padding:1px 5px;border:1px solid var(--border2);border-radius:2px;font-size:10px;font-weight:700;font-family:'Barlow Condensed',sans-serif}
 .mpaa-R{border-color:#c0392b;color:#c0392b}.mpaa-PG13{border-color:var(--yellow);color:var(--yellow)}.mpaa-PG{border-color:#2980b9;color:#2980b9}.mpaa-NR{border-color:var(--muted);color:var(--muted)}
 .loc-tag{display:inline-block;background:var(--surface3);padding:2px 7px;border-radius:3px;font-size:11px;color:var(--dim)}
 .type-badge{font-size:10px;padding:2px 6px;border-radius:2px;background:var(--og);color:var(--orange);white-space:nowrap}
 .event-tag{font-size:10px;color:var(--orange);font-style:italic}
-.notes-cell{max-width:140px;overflow:hidden;text-overflow:ellipsis;color:var(--dim);font-size:11px}
-.edit-btn{background:transparent;border:1px solid var(--border);color:var(--dim);padding:3px 8px;border-radius:3px;cursor:pointer;font-size:11px;font-family:'Barlow Condensed',sans-serif;transition:all .15s}
-.edit-btn:hover{border-color:var(--orange);color:var(--orange)}
+.notes-cell{max-width:130px;overflow:hidden;text-overflow:ellipsis;color:var(--dim);font-size:11px}
 
 /* ── CARD VIEW ── */
-#card-view{padding:16px 18px;display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px}
+#card-view{padding:14px 16px;display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:11px}
 .movie-card{background:var(--surface);border:1px solid var(--border);border-radius:6px;overflow:hidden;transition:all .2s;cursor:pointer;position:relative}
 .movie-card:hover{border-color:var(--border2);transform:translateY(-2px);box-shadow:0 10px 28px rgba(0,0,0,.5)}
-.card-poster{width:100%;aspect-ratio:2/3;object-fit:cover;display:block;background:var(--surface2)}
+.card-poster{width:100%;aspect-ratio:2/3;object-fit:cover;display:block;background:var(--surface2);cursor:zoom-in}
 .card-no-poster{width:100%;aspect-ratio:2/3;background:linear-gradient(160deg,var(--surface2),var(--surface3));display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px}
-.cnp-skull{font-size:32px;opacity:.35}
+.cnp-skull{font-size:30px;opacity:.35}
 .cnp-title{font-family:'Barlow Condensed',sans-serif;font-size:12px;text-align:center;padding:0 10px;color:var(--dim);line-height:1.3}
-.card-body{padding:9px 11px 11px}
+.card-body{padding:8px 10px 10px}
 .card-num{font-size:10px;color:var(--muted);font-family:'Bebas Neue',sans-serif;letter-spacing:1px}
-.card-title{font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;line-height:1.2;margin:2px 0 4px}
-.card-meta{display:flex;align-items:center;gap:4px;flex-wrap:wrap;margin-bottom:5px}
-.card-bot{display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--border);padding-top:6px;margin-top:5px}
+.card-title{font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;line-height:1.2;margin:2px 0 4px}
+.card-meta{display:flex;align-items:center;gap:4px;flex-wrap:wrap;margin-bottom:4px}
+.card-bot{display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--border);padding-top:5px;margin-top:4px}
 .card-loc{font-size:10px;color:var(--dim);font-family:'Barlow Condensed',sans-serif}
 .card-date{font-size:10px;color:var(--muted)}
-.card-note{font-size:10px;color:var(--dim);font-style:italic;margin-top:5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;border-top:1px solid var(--border);padding-top:5px}
-.card-type-badge{position:absolute;top:7px;right:7px;background:rgba(11,11,11,.85);border:1px solid var(--orange);color:var(--orange);font-family:'Barlow Condensed',sans-serif;font-size:9px;letter-spacing:1px;padding:2px 5px;border-radius:2px}
-.card-menu-wrap{position:absolute;top:7px;left:7px}
-.card-dotmenu{background:rgba(11,11,11,.8);border:1px solid var(--border2);color:var(--dim);width:26px;height:26px;border-radius:4px;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;transition:all .15s;line-height:.8}
+.card-note{font-size:10px;color:var(--dim);font-style:italic;margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;border-top:1px solid var(--border);padding-top:4px}
+.card-type-badge{position:absolute;top:6px;right:6px;background:rgba(11,11,11,.85);border:1px solid var(--orange);color:var(--orange);font-family:'Barlow Condensed',sans-serif;font-size:9px;letter-spacing:1px;padding:2px 5px;border-radius:2px}
+/* 3-dot admin menu on cards */
+.card-menu-wrap{position:absolute;top:6px;left:6px}
+.card-dotmenu{background:rgba(11,11,11,.8);border:1px solid var(--border2);color:var(--dim);width:24px;height:24px;border-radius:4px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:all .15s;line-height:.8}
 .card-dotmenu:hover{border-color:var(--orange);color:var(--orange)}
-.dot-dropdown{position:absolute;top:30px;left:0;background:var(--surface2);border:1px solid var(--border2);border-radius:5px;z-index:50;min-width:120px;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,.6);display:none}
+.dot-dropdown{position:absolute;top:28px;left:0;background:var(--surface2);border:1px solid var(--border2);border-radius:5px;z-index:50;min-width:110px;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,.6);display:none}
 .dot-dropdown.open{display:block}
-.dot-dd-item{display:block;width:100%;padding:9px 14px;text-align:left;background:transparent;border:none;color:var(--text);cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-size:14px;transition:background .1s;white-space:nowrap}
+.dot-dd-item{display:block;width:100%;padding:8px 13px;text-align:left;background:transparent;border:none;color:var(--text);cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-size:13px;transition:background .1s;white-space:nowrap}
 .dot-dd-item:hover{background:var(--surface3)}
 .dot-dd-item.danger{color:#e74c3c}
 .dot-dd-item.danger:hover{background:rgba(192,57,43,.15)}
 
 /* ── LIST VIEW ── */
 #list-view{display:none}
-.list-filter-bar{display:flex;gap:6px;padding:9px 14px;background:var(--surface);border-bottom:1px solid var(--border);flex-wrap:wrap;position:sticky;top:0;z-index:3}
-.lf-sel{background:var(--surface2);border:1px solid var(--border);color:var(--dim);padding:5px 8px;border-radius:4px;font-family:'Barlow Condensed',sans-serif;font-size:12px;outline:none;cursor:pointer;appearance:none;-webkit-appearance:none}
+.list-filter-bar{display:flex;gap:5px;padding:8px 12px;background:var(--surface);border-bottom:1px solid var(--border);flex-wrap:wrap;position:sticky;top:0;z-index:3}
+.lf-sel{background:var(--surface2);border:1px solid var(--border);color:var(--dim);padding:5px 7px;border-radius:4px;font-family:'Barlow Condensed',sans-serif;font-size:12px;outline:none;cursor:pointer;appearance:none;-webkit-appearance:none}
 .lf-sel:focus{border-color:var(--orange);color:var(--text)}
 .lf-sel option{background:#1a1a1a}
-.list-row{display:flex;align-items:center;border-bottom:1px solid var(--border);padding:6px 14px;cursor:pointer;transition:background .1s;font-family:'Barlow Condensed',sans-serif}
+.list-row{display:flex;align-items:center;border-bottom:1px solid var(--border);padding:6px 12px;cursor:pointer;transition:background .1s;font-family:'Barlow Condensed',sans-serif}
 .list-row:hover{background:var(--og)}
-.lr-num{width:36px;color:var(--muted);font-size:11px;flex-shrink:0}
-.lr-movie{flex:1;font-size:14px;font-weight:600;min-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding-right:10px}
-.lr-date{width:90px;color:var(--dim);font-size:12px;flex-shrink:0}
-.lr-dotw{width:38px;color:var(--dim);font-size:12px;flex-shrink:0}
-.lr-year{width:42px;color:var(--dim);font-size:12px;flex-shrink:0}
-.lr-mpaa{width:44px;flex-shrink:0}
-.lr-rt{width:52px;flex-shrink:0}
-.lr-rating{width:80px;flex-shrink:0}
-.lr-loc{width:108px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;color:var(--dim);flex-shrink:0}
-.lr-type{width:90px;flex-shrink:0}
-.lr-act{width:30px;flex-shrink:0;display:flex;justify-content:flex-end}
+.lr-num{width:34px;color:var(--muted);font-size:11px;flex-shrink:0}
+.lr-movie{flex:1;font-size:14px;font-weight:600;min-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding-right:8px}
+.lr-date{width:86px;color:var(--dim);font-size:12px;flex-shrink:0}
+.lr-dotw{width:36px;color:var(--dim);font-size:12px;flex-shrink:0}
+.lr-year{width:40px;color:var(--dim);font-size:12px;flex-shrink:0}
+.lr-mpaa{width:42px;flex-shrink:0}
+.lr-rt{width:50px;flex-shrink:0}
+.lr-rating{width:78px;flex-shrink:0}
+.lr-loc{width:104px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;color:var(--dim);flex-shrink:0}
+.lr-type{width:88px;flex-shrink:0}
 
-/* ── STATS VIEW ── */
-#stats-view{padding:18px 22px;max-width:1100px;display:none}
-.stats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-bottom:20px}
-.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:14px;border-top:2px solid var(--orange)}
-.stat-card h3{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;color:var(--orange);margin-bottom:10px}
+/* ── STATS ── */
+#stats-view{padding:16px 20px;max-width:1100px;display:none}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:12px;margin-bottom:18px}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:13px;border-top:2px solid var(--orange)}
+.stat-card h3{font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:2px;color:var(--orange);margin-bottom:9px}
 .sri{display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid var(--border)}
 .sri:last-child{border-bottom:none}
-.sri-lbl{font-family:'Barlow Condensed',sans-serif;font-size:13px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:185px}
-.sri-val{font-family:'Bebas Neue',sans-serif;font-size:15px;color:var(--orange);letter-spacing:1px;flex-shrink:0;margin-left:6px}
+.sri-lbl{font-family:'Barlow Condensed',sans-serif;font-size:13px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:180px}
+.sri-val{font-family:'Bebas Neue',sans-serif;font-size:14px;color:var(--orange);letter-spacing:1px;flex-shrink:0;margin-left:6px}
 .sbar{height:4px;background:var(--surface3);border-radius:2px;margin-top:3px;overflow:hidden}
 .sbar-fill{height:100%;background:var(--orange);border-radius:2px}
-.stat-big{font-family:'Bebas Neue',sans-serif;font-size:40px;color:var(--orange);line-height:1}
-.stat-lbl2{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase}
+.stat-big{font-family:'Bebas Neue',sans-serif;font-size:38px;color:var(--orange);line-height:1}
+.stat-lbl2{font-family:'Barlow Condensed',sans-serif;font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase}
 
-/* ── HOF VIEW ── */
-#hof-view{padding:18px 22px;display:none}
-.hof-hdr{margin-bottom:14px}
-.hof-hdr h2{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:3px;color:var(--orange)}
-.hof-hdr p{font-family:'Barlow Condensed',sans-serif;font-size:12px;color:var(--dim);margin-top:3px;letter-spacing:.5px}
-.hof-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+/* ── HOF ── */
+#hof-view{padding:16px 20px;display:none}
+.hof-hdr{margin-bottom:13px}
+.hof-hdr h2{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:3px;color:var(--orange)}
+.hof-hdr p{font-family:'Barlow Condensed',sans-serif;font-size:12px;color:var(--dim);margin-top:2px}
+.hof-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:11px}
 .hof-card{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:12px;display:flex;gap:10px;align-items:flex-start;transition:all .2s;cursor:pointer}
 .hof-card:hover{border-color:var(--border2);background:var(--surface2)}
-.hof-rank{font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--muted);letter-spacing:1px;line-height:1;min-width:26px;text-align:center;flex-shrink:0}
+.hof-rank{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--muted);line-height:1;min-width:24px;text-align:center;flex-shrink:0}
 .hof-rank.top3{color:var(--orange)}
 .hof-info{flex:1;min-width:0}
-.hof-title{font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;line-height:1.2;margin-bottom:3px}
-.hof-count{font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:1px;color:var(--orange);background:var(--og);padding:2px 7px;border-radius:3px;display:inline-block;margin-bottom:3px}
+.hof-title{font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;line-height:1.2;margin-bottom:3px}
+.hof-count{font-family:'Bebas Neue',sans-serif;font-size:12px;color:var(--orange);background:var(--og);padding:2px 7px;border-radius:3px;display:inline-block;margin-bottom:3px}
 .hof-years{font-size:11px;color:var(--dim);font-family:'Barlow Condensed',sans-serif}
 
 /* ── PAGINATION / BOTTOM BAR ── */
-.pagination{display:flex;align-items:center;justify-content:center;gap:5px;padding:8px 16px;border-top:1px solid var(--border);background:var(--surface);flex-shrink:0;flex-wrap:wrap}
+.pagination{display:flex;align-items:center;justify-content:center;gap:5px;padding:8px 14px;border-top:1px solid var(--border);background:var(--surface);flex-shrink:0;flex-wrap:wrap}
 .pg-btn{padding:4px 10px;background:var(--surface2);border:1px solid var(--border);color:var(--dim);cursor:pointer;border-radius:3px;font-family:'Barlow Condensed',sans-serif;font-size:13px;transition:all .15s}
 .pg-btn:hover,.pg-btn.on{background:var(--orange);border-color:var(--orange);color:#fff}
 .pg-btn:disabled{opacity:.3;cursor:default}
 .pg-info{font-family:'Barlow Condensed',sans-serif;font-size:12px;color:var(--muted)}
-.pgsize-sel{background:var(--surface2);border:1px solid var(--border);color:var(--dim);padding:4px 7px;border-radius:3px;font-family:'Barlow Condensed',sans-serif;font-size:12px;outline:none;cursor:pointer;margin-left:8px}
+.pgsize-sel{background:var(--surface2);border:1px solid var(--border);color:var(--dim);padding:4px 6px;border-radius:3px;font-family:'Barlow Condensed',sans-serif;font-size:12px;outline:none;cursor:pointer}
 .pgsize-sel option{background:#1a1a1a}
 
-/* ── MODALS ── */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);display:flex;align-items:center;justify-content:center;z-index:200;backdrop-filter:blur(5px)}
-.modal{background:var(--surface);border:1px solid var(--border);border-top:3px solid var(--orange);border-radius:8px;padding:22px 24px;width:520px;max-width:96vw;max-height:92vh;overflow-y:auto}
-.modal h2{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:2px;color:var(--orange);margin-bottom:16px}
-.det-layout{display:flex;gap:16px;margin-bottom:14px}
-.d-poster img{width:90px;border-radius:4px}
-.d-noi{width:90px;height:134px;background:var(--surface3);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:26px;opacity:.4}
-.d-info{flex:1;min-width:0}
-.d-title{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:700;line-height:1.2;margin-bottom:2px}
-.d-yr{color:var(--dim);font-size:12px;margin-bottom:8px}
-.d-row{display:flex;align-items:center;gap:7px;margin-bottom:5px;font-size:13px;flex-wrap:wrap}
-.d-lbl{font-family:'Barlow Condensed',sans-serif;font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;min-width:54px}
-.d-plot{font-size:12px;color:var(--dim);line-height:1.6;margin-top:9px;font-style:italic;border-top:1px solid var(--border);padding-top:9px}
-.d-meta{display:grid;grid-template-columns:1fr 1fr;gap:7px;border-top:1px solid var(--border);padding-top:11px;margin-top:3px}
-.dm{display:flex;flex-direction:column;gap:2px}
-.dm-l{font-family:'Barlow Condensed',sans-serif;font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase}
-.dm-v{font-size:13px}
+/* ── FULL-SCREEN DETAIL MODAL ── */
+.fs-overlay{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:300;display:flex;flex-direction:column;backdrop-filter:blur(8px)}
+.fs-topbar{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-bottom:1px solid var(--border);background:var(--surface);flex-shrink:0}
+.fs-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:var(--orange);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:60vw}
+.fs-actions{display:flex;gap:8px;align-items:center}
+.fs-close{background:transparent;border:1px solid var(--border);color:var(--dim);width:32px;height:32px;border-radius:4px;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.fs-close:hover{border-color:var(--orange);color:var(--orange)}
+.fs-body{flex:1;overflow-y:auto;display:flex;flex-direction:column}
+
+/* detail layout inside fs */
+.fs-hero{display:flex;gap:0;min-height:0}
+.fs-poster-col{flex-shrink:0;width:240px;background:var(--surface2);display:flex;align-items:stretch}
+.fs-poster-col img{width:100%;height:100%;object-fit:cover;display:block;cursor:zoom-in}
+.fs-poster-col .no-poster{width:100%;display:flex;align-items:center;justify-content:center;font-size:64px;opacity:.2;min-height:300px}
+.fs-info-col{flex:1;padding:24px 28px;min-width:0;overflow-y:auto}
+.fs-movie-title{font-family:'Barlow Condensed',sans-serif;font-size:34px;font-weight:700;line-height:1.1;margin-bottom:4px}
+.fs-year-line{font-size:14px;color:var(--dim);margin-bottom:18px;font-family:'Barlow Condensed',sans-serif;letter-spacing:.5px}
+.fs-meta-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px;margin-bottom:20px}
+.fs-meta-item{display:flex;flex-direction:column;gap:3px}
+.fs-meta-lbl{font-family:'Barlow Condensed',sans-serif;font-size:9px;letter-spacing:2.5px;color:var(--muted);text-transform:uppercase}
+.fs-meta-val{font-size:14px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.fs-plot{font-size:13px;color:var(--dim);line-height:1.7;padding:16px;background:var(--surface2);border-radius:5px;font-style:italic;border-left:3px solid var(--border2);margin-bottom:16px}
+.fs-notes-box{background:var(--og);border:1px solid var(--border2);border-radius:5px;padding:12px 14px;font-size:13px;color:var(--text);line-height:1.6}
+.fs-notes-lbl{font-family:'Barlow Condensed',sans-serif;font-size:9px;letter-spacing:2px;color:var(--orange);text-transform:uppercase;margin-bottom:4px}
+
+/* edit form inside fs */
+.fs-edit-wrap{padding:20px 28px;flex:1;overflow-y:auto}
 .fg-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
 .fg{display:flex;flex-direction:column;gap:4px}
 .fg.full{grid-column:1/-1}
@@ -240,29 +273,47 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;font
 .lookup-bar{display:flex;gap:7px;margin-bottom:11px;padding-bottom:11px;border-bottom:1px solid var(--border)}
 .lu-inp{flex:1;background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:7px 9px;border-radius:4px;font-family:'Barlow',sans-serif;font-size:13px;outline:none}
 .lu-inp:focus{border-color:var(--orange)}
-.lu-btn{padding:7px 12px;background:var(--surface3);border:1px solid var(--border2);color:var(--dim);font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:1px;cursor:pointer;border-radius:4px;white-space:nowrap;transition:all .15s}
+.lu-btn{padding:7px 12px;background:var(--surface3);border:1px solid var(--border2);color:var(--dim);font-family:'Barlow Condensed',sans-serif;font-size:13px;cursor:pointer;border-radius:4px;white-space:nowrap;transition:all .15s}
 .lu-btn:hover{border-color:var(--orange);color:var(--orange)}
 .lu-btn.busy{opacity:.6;cursor:wait}
 .lu-status{font-size:11px;color:var(--dim);margin-bottom:8px;font-style:italic;min-height:15px}
-.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:14px;border-top:1px solid var(--border);padding-top:13px}
+
+/* action buttons */
 .btn-c{padding:7px 14px;background:transparent;border:1px solid var(--border);color:var(--dim);font-family:'Barlow Condensed',sans-serif;font-size:14px;cursor:pointer;border-radius:4px;letter-spacing:1px;transition:all .15s}
 .btn-c:hover{border-color:var(--dim)}
 .btn-s{padding:7px 18px;background:var(--orange);border:none;color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:600;letter-spacing:1px;cursor:pointer;border-radius:4px;transition:background .15s}
 .btn-s:hover{background:var(--orange2)}
-.del-modal{width:340px;text-align:center}
+.btn-edit{padding:6px 14px;background:transparent;border:1px solid var(--border2);color:var(--dim);font-family:'Barlow Condensed',sans-serif;font-size:13px;cursor:pointer;border-radius:4px;transition:all .15s;letter-spacing:.5px}
+.btn-edit:hover{border-color:var(--orange);color:var(--orange)}
+
+/* lightbox for poster */
+.lightbox{position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:500;display:flex;align-items:center;justify-content:center;cursor:zoom-out}
+.lightbox img{max-width:90vw;max-height:90vh;object-fit:contain;border-radius:4px;box-shadow:0 20px 60px rgba(0,0,0,.8)}
+.lightbox-close{position:absolute;top:18px;right:18px;background:transparent;border:1px solid rgba(255,255,255,.2);color:#fff;width:36px;height:36px;border-radius:4px;cursor:pointer;font-size:20px;display:flex;align-items:center;justify-content:center}
+
+/* delete confirm */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);display:flex;align-items:center;justify-content:center;z-index:400;backdrop-filter:blur(5px)}
+.del-box{background:var(--surface);border:1px solid var(--border);border-top:3px solid #c0392b;border-radius:8px;padding:28px 30px;width:340px;max-width:94vw;text-align:center}
 .del-ico{font-size:38px;margin-bottom:8px}
-.del-msg{font-size:13px;color:var(--dim);line-height:1.5;margin-bottom:3px}
+.del-msg{font-size:13px;color:var(--dim);margin-bottom:3px}
 .del-name{font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:700;color:var(--text);margin-bottom:14px}
-.btn-del{padding:7px 14px;background:rgba(192,57,43,.15);border:1px solid #c0392b;color:#e74c3c;font-family:'Barlow Condensed',sans-serif;font-size:14px;cursor:pointer;border-radius:4px;letter-spacing:1px;transition:all .15s}
+.del-note{font-size:12px;color:var(--muted);margin-bottom:18px}
+.del-btns{display:flex;gap:8px;justify-content:center}
+.btn-del{padding:8px 16px;background:rgba(192,57,43,.15);border:1px solid #c0392b;color:#e74c3c;font-family:'Barlow Condensed',sans-serif;font-size:14px;cursor:pointer;border-radius:4px;transition:all .15s}
 .btn-del:hover{background:rgba(192,57,43,.3)}
-.pin-sub{color:var(--dim);font-size:13px;margin-bottom:13px;text-align:center}
+
+/* PIN */
+.pin-box{background:var(--surface);border:1px solid var(--border);border-top:3px solid var(--orange);border-radius:8px;padding:24px 28px;width:290px;max-width:94vw;text-align:center}
+.pin-sub{color:var(--dim);font-size:13px;margin-bottom:13px}
 .pin-input{width:145px;background:var(--surface2);border:1px solid var(--border);color:var(--orange);padding:10px;border-radius:4px;font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:13px;text-align:center;outline:none;-webkit-text-security:disc;display:block;margin:0 auto}
 .pin-input:focus{border-color:var(--orange)}
-.pin-err{color:#e74c3c;font-size:12px;margin-top:7px;min-height:16px;text-align:center}
-.toast{position:fixed;bottom:22px;right:22px;background:var(--surface2);border:1px solid var(--border2);border-left:4px solid var(--orange);color:var(--text);padding:10px 14px;border-radius:4px;font-family:'Barlow Condensed',sans-serif;font-size:15px;z-index:999;animation:tin .2s ease;max-width:260px}
+.pin-err{color:#e74c3c;font-size:12px;margin-top:7px;min-height:16px}
+
+/* toast */
+.toast{position:fixed;bottom:20px;right:20px;background:var(--surface2);border:1px solid var(--border2);border-left:4px solid var(--orange);color:var(--text);padding:10px 14px;border-radius:4px;font-family:'Barlow Condensed',sans-serif;font-size:15px;z-index:999;animation:tin .2s ease;max-width:260px}
 .toast.err{border-left-color:#e74c3c}
 @keyframes tin{from{transform:translateX(12px);opacity:0}to{transform:none;opacity:1}}
-.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:70px 40px;color:var(--muted);font-family:'Barlow Condensed',sans-serif;grid-column:1/-1}
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 40px;color:var(--muted);font-family:'Barlow Condensed',sans-serif;grid-column:1/-1}
 .empty .es{font-size:44px;margin-bottom:10px;opacity:.35}
 .empty p{font-size:18px;letter-spacing:3px}
 ::-webkit-scrollbar{width:5px;height:5px}
@@ -273,27 +324,31 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;font
 </head>
 <body>
 
-<!-- SIDEBAR (starts collapsed) -->
-<div id="sidebar" class="collapsed">
-  <div class="sb-top">
-    <button class="sb-toggle" onclick="toggleSidebar()">☰</button>
+<!-- DRAWER OVERLAY -->
+<div id="drawer-overlay" onclick="closeSidebar()"></div>
+
+<!-- SIDEBAR DRAWER -->
+<div id="sidebar">
+  <div class="sb-head">
+    <div class="sb-logo"><span>💀</span><h1>HFMDB</h1></div>
+    <button class="sb-close" onclick="closeSidebar()">✕</button>
   </div>
-  <div class="sb-stats sb-hide">
+  <div class="sb-stats">
     <div class="sb-stat"><span class="ssv" id="s-total">—</span><span class="ssl">Films</span></div>
     <div class="sb-stat"><span class="ssv" id="s-showing">—</span><span class="ssl">Showing</span></div>
     <div class="sb-stat"><span class="ssv" id="s-avg">—</span><span class="ssl">Avg ★</span></div>
     <div class="sb-stat"><span class="ssv" id="s-locs">—</span><span class="ssl">Venues</span></div>
   </div>
-  <div class="sb-sec sb-hide">Views</div>
-  <div class="nav-item active" onclick="setView('now')"   id="nv-now"><span class="nav-icon">📅</span><span class="sb-hide">Now</span></div>
-  <div class="nav-item" onclick="setView('sheet')" id="nv-sheet"><span class="nav-icon">📋</span><span class="sb-hide">Sheet</span></div>
-  <div class="nav-item" onclick="setView('card')"  id="nv-card"><span class="nav-icon">🎬</span><span class="sb-hide">Cards</span></div>
-  <div class="nav-item" onclick="setView('list')"  id="nv-list"><span class="nav-icon">📄</span><span class="sb-hide">List</span></div>
-  <div class="nav-item" onclick="setView('stats')" id="nv-stats"><span class="nav-icon">📊</span><span class="sb-hide">Stats</span></div>
-  <div class="nav-item" onclick="setView('hof')"   id="nv-hof"><span class="nav-icon">🏆</span><span class="sb-hide">Hall of Fame</span></div>
-  <div class="sb-div sb-hide"></div>
-  <div class="sb-sec sb-hide">Filters</div>
-  <div class="sb-filters sb-hide">
+  <div class="sb-sec">Views</div>
+  <div class="nav-item active" onclick="setView('now');closeSidebar()"   id="nv-now"><span class="nav-icon">📅</span>Now</div>
+  <div class="nav-item" onclick="setView('sheet');closeSidebar()" id="nv-sheet"><span class="nav-icon">📋</span>Sheet</div>
+  <div class="nav-item" onclick="setView('card');closeSidebar()"  id="nv-card"><span class="nav-icon">🎬</span>Cards</div>
+  <div class="nav-item" onclick="setView('list');closeSidebar()"  id="nv-list"><span class="nav-icon">📄</span>List</div>
+  <div class="nav-item" onclick="setView('stats');closeSidebar()" id="nv-stats"><span class="nav-icon">📊</span>Stats</div>
+  <div class="nav-item" onclick="setView('hof');closeSidebar()"   id="nv-hof"><span class="nav-icon">🏆</span>Hall of Fame</div>
+  <div class="sb-div"></div>
+  <div class="sb-sec">Filters</div>
+  <div class="sb-filters">
     <label class="fl">Location</label>
     <select class="f-sel" id="fl-loc" onchange="applyFilters()"><option value="">All Locations</option></select>
     <label class="fl">MPAA Rating</label>
@@ -312,7 +367,7 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;font
   </div>
   <div class="sb-admin">
     <button class="admin-btn" id="admin-btn" onclick="toggleAdmin()">
-      <span class="nav-icon">🔒</span><span class="sb-hide" id="admin-lbl">Admin Login</span>
+      <span>🔒</span><span id="admin-lbl">Admin Login</span>
     </button>
   </div>
 </div>
@@ -321,53 +376,56 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;font
 <div id="main">
   <div id="topbar">
     <div class="tb-left">
+      <button class="tb-menu-btn" onclick="openSidebar()">☰</button>
       <div class="tb-logo">
         <span class="tb-skull">💀</span>
         <span class="tb-title">HFMDB</span>
-        <span class="tb-ver">v1.4</span>
+        <span class="tb-ver">v1.5</span>
       </div>
       <span class="admin-badge" id="admin-badge" style="display:none">⚡ ADMIN</span>
     </div>
     <div class="tb-right">
       <div class="search-wrap"><input type="text" class="search-box" id="search-box" placeholder="Search films…" oninput="applyFilters()"></div>
+      <!-- emoji view switcher -->
+      <div class="view-switcher">
+        <button class="view-btn" id="view-btn" onclick="toggleViewDropdown()">
+          <span id="view-btn-icon">📅</span>
+          <span id="view-btn-label">Now</span>
+          <span class="vb-arrow">▾</span>
+        </button>
+        <div class="view-dropdown" id="view-dropdown">
+          <div class="vd-item active" onclick="setView('now');closeViewDD()"   id="vdi-now"><span>📅</span>Now</div>
+          <div class="vd-item" onclick="setView('sheet');closeViewDD()" id="vdi-sheet"><span>📋</span>Sheet</div>
+          <div class="vd-item" onclick="setView('card');closeViewDD()"  id="vdi-card"><span>🎬</span>Cards</div>
+          <div class="vd-item" onclick="setView('list');closeViewDD()"  id="vdi-list"><span>📄</span>List</div>
+          <div class="vd-item" onclick="setView('stats');closeViewDD()" id="vdi-stats"><span>📊</span>Stats</div>
+          <div class="vd-item" onclick="setView('hof');closeViewDD()"   id="vdi-hof"><span>🏆</span>Hall of Fame</div>
+        </div>
+      </div>
       <button class="add-btn" id="add-btn" onclick="openAdd()" style="display:none" title="Add Film">+</button>
     </div>
   </div>
 
   <div id="content">
     <div class="loading-overlay" id="loader"><div class="l-skull">💀</div><div class="l-txt">Loading HFMDB…</div></div>
-
-    <!-- NOW -->
-    <div id="now-view" style="display:none"></div>
-
-    <!-- SHEET -->
-    <div id="sheet-view" style="display:none">
-      <table class="sheet-table">
-        <thead><tr>
-          <th onclick="sortBy('num')">#<span class="sort-arr" id="sa-num"></span></th>
-          <th style="cursor:default">🖼</th>
-          <th onclick="sortBy('date')">Date<span class="sort-arr" id="sa-date"></span></th>
-          <th>DOTW</th>
-          <th onclick="sortBy('movie')">Movie<span class="sort-arr" id="sa-movie"></span></th>
-          <th onclick="sortBy('year')">Year<span class="sort-arr" id="sa-year"></span></th>
-          <th>MPAA</th>
-          <th onclick="sortBy('rt')">RT%<span class="sort-arr" id="sa-rt"></span></th>
-          <th onclick="sortBy('rating')">Rating<span class="sort-arr" id="sa-rating"></span></th>
-          <th>Type</th>
-          <th onclick="sortBy('location')">Location<span class="sort-arr" id="sa-location"></span></th>
-          <th>Event</th>
-          <th>Notes</th>
-          <th id="th-actions" style="display:none"></th>
-        </tr></thead>
-        <tbody id="sheet-body"></tbody>
-      </table>
-    </div>
-
-    <!-- CARDS -->
-    <div id="card-view" style="display:none"></div>
-
-    <!-- LIST -->
-    <div id="list-view" style="display:none">
+    <div id="now-view"   style="display:none"></div>
+    <div id="sheet-view" style="display:none"><table class="sheet-table"><thead><tr>
+      <th onclick="sortBy('num')">#<span class="sort-arr" id="sa-num"></span></th>
+      <th style="cursor:default">🖼</th>
+      <th onclick="sortBy('date')">Date<span class="sort-arr" id="sa-date"></span></th>
+      <th>DOTW</th>
+      <th onclick="sortBy('movie')">Movie<span class="sort-arr" id="sa-movie"></span></th>
+      <th onclick="sortBy('year')">Year<span class="sort-arr" id="sa-year"></span></th>
+      <th>MPAA</th>
+      <th onclick="sortBy('rt')">RT%<span class="sort-arr" id="sa-rt"></span></th>
+      <th onclick="sortBy('rating')">Rating<span class="sort-arr" id="sa-rating"></span></th>
+      <th>Type</th>
+      <th onclick="sortBy('location')">Location<span class="sort-arr" id="sa-location"></span></th>
+      <th>Event</th>
+      <th>Notes</th>
+    </tr></thead><tbody id="sheet-body"></tbody></table></div>
+    <div id="card-view"  style="display:none"></div>
+    <div id="list-view"  style="display:none">
       <div class="list-filter-bar">
         <select class="lf-sel" id="lf-loc"    onchange="applyListFilters()"><option value="">📍 All Locations</option></select>
         <select class="lf-sel" id="lf-mpaa"   onchange="applyListFilters()"><option value="">🎬 MPAA</option><option>R</option><option>PG-13</option><option>PG</option><option>NR</option></select>
@@ -383,16 +441,11 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;font
         </select>
         <select class="lf-sel" id="lf-rating" onchange="applyListFilters()">
           <option value="">⭐ Rating</option>
-          <option value="5">★★★★★ (5)</option>
-          <option value="4.5">★★★★½ (4.5)</option>
-          <option value="4">★★★★ (4)</option>
-          <option value="3.5">★★★½ (3.5)</option>
-          <option value="3">★★★ (3)</option>
-          <option value="2.5">★★½ (2.5)</option>
-          <option value="2">★★ (2)</option>
-          <option value="1.5">★½ (1.5)</option>
-          <option value="1">★ (1)</option>
-          <option value="0.5">½ (0.5)</option>
+          <option value="5">★★★★★ 5</option><option value="4.5">★★★★½ 4.5</option>
+          <option value="4">★★★★ 4</option><option value="3.5">★★★½ 3.5</option>
+          <option value="3">★★★ 3</option><option value="2.5">★★½ 2.5</option>
+          <option value="2">★★ 2</option><option value="1.5">★½ 1.5</option>
+          <option value="1">★ 1</option><option value="0.5">½ 0.5</option>
         </select>
         <select class="lf-sel" id="lf-dotw" onchange="applyListFilters()">
           <option value="">📆 Day</option>
@@ -402,104 +455,51 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;font
       </div>
       <div id="list-body"></div>
     </div>
-
-    <!-- STATS -->
     <div id="stats-view" style="display:none"></div>
-
-    <!-- HOF -->
-    <div id="hof-view" style="display:none"></div>
+    <div id="hof-view"   style="display:none"></div>
   </div>
 
-  <!-- BOTTOM BAR -->
   <div class="pagination" id="pagination"></div>
+</div>
+
+<!-- FULL SCREEN DETAIL / EDIT -->
+<div class="fs-overlay" id="fs-overlay" style="display:none">
+  <div class="fs-topbar">
+    <div class="fs-title" id="fs-title">FILM</div>
+    <div class="fs-actions" id="fs-actions"></div>
+  </div>
+  <div class="fs-body" id="fs-body"></div>
+</div>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox" style="display:none" onclick="closeLightbox()">
+  <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+  <img id="lightbox-img" src="" alt="">
+</div>
+
+<!-- DELETE CONFIRM -->
+<div class="modal-overlay" id="del-modal" style="display:none" onclick="if(event.target===this)closeDelModal()">
+  <div class="del-box">
+    <div class="del-ico">🗑️</div>
+    <div class="del-msg">Permanently delete</div>
+    <div class="del-name" id="del-name"></div>
+    <div class="del-note">This cannot be undone.</div>
+    <div class="del-btns">
+      <button class="btn-c" onclick="closeDelModal()">Cancel</button>
+      <button class="btn-del" onclick="confirmDelete()">Yes, Delete Forever</button>
+    </div>
+  </div>
 </div>
 
 <!-- PIN MODAL -->
 <div class="modal-overlay" id="pin-modal" style="display:none" onclick="if(event.target===this)closePinModal()">
-  <div class="modal" style="width:290px;text-align:center">
-    <h2 style="text-align:center">💀 ADMIN</h2>
+  <div class="pin-box">
+    <h2 style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:var(--orange);text-align:center;margin-bottom:10px">💀 ADMIN</h2>
     <p class="pin-sub">Enter PIN to unlock editing</p>
     <input type="password" class="pin-input" id="pin-input" maxlength="4" placeholder="····" oninput="checkPin()" autocomplete="off">
     <div class="pin-err" id="pin-err"></div>
-    <div class="modal-actions" style="justify-content:center;border-top:none;padding-top:8px">
+    <div style="display:flex;justify-content:center;margin-top:14px">
       <button class="btn-c" onclick="closePinModal()">Cancel</button>
-    </div>
-  </div>
-</div>
-
-<!-- EDIT MODAL -->
-<div class="modal-overlay" id="edit-modal" style="display:none" onclick="if(event.target===this)closeModal()">
-  <div class="modal">
-    <h2 id="modal-h">FILM</h2>
-    <div id="lookup-section" style="display:none">
-      <div class="lookup-bar">
-        <input type="text" class="lu-inp" id="lookup-q" placeholder="Type title to auto-fill…" onkeydown="if(event.key==='Enter')doLookup()">
-        <button class="lu-btn" id="lookup-btn" onclick="doLookup()">🎬 Lookup</button>
-      </div>
-      <div class="lu-status" id="lookup-status"></div>
-    </div>
-    <div id="detail-view">
-      <div class="det-layout">
-        <div class="d-poster">
-          <img id="dv-poster" src="" style="display:none;width:90px;border-radius:4px">
-          <div class="d-noi" id="dv-noi">💀</div>
-        </div>
-        <div class="d-info">
-          <div class="d-title" id="dv-title"></div>
-          <div class="d-yr"   id="dv-yr"></div>
-          <div class="d-row"><span class="d-lbl">RT Score</span><span id="dv-rt"></span></div>
-          <div class="d-row"><span class="d-lbl">Rating</span><span id="dv-rating"></span></div>
-          <div class="d-row"><span class="d-lbl">Location</span><span id="dv-loc"></span></div>
-          <div class="d-row"><span class="d-lbl">Date</span><span id="dv-date"></span></div>
-          <div class="d-row"><span class="d-lbl">MPAA</span><span id="dv-mpaa"></span></div>
-          <div class="d-row"><span class="d-lbl">Director</span><span id="dv-director" style="color:var(--dim)"></span></div>
-          <div class="d-row"><span class="d-lbl">Runtime</span><span id="dv-runtime" style="color:var(--dim)"></span></div>
-          <div class="d-plot" id="dv-plot" style="display:none"></div>
-        </div>
-      </div>
-      <div class="d-meta">
-        <div class="dm"><span class="dm-l">Genre</span><span class="dm-v" id="dv-genre"></span></div>
-        <div class="dm"><span class="dm-l">Type</span><span class="dm-v" id="dv-type"></span></div>
-        <div class="dm"><span class="dm-l">Selected By</span><span class="dm-v" id="dv-selected"></span></div>
-        <div class="dm"><span class="dm-l">Event</span><span class="dm-v" id="dv-event"></span></div>
-        <div class="dm" style="grid-column:1/-1"><span class="dm-l">Notes</span><span class="dm-v" id="dv-notes" style="color:var(--dim);font-style:italic"></span></div>
-      </div>
-    </div>
-    <div id="edit-form" style="display:none">
-      <div class="fg-grid">
-        <div class="fg full"><label>Movie Title *</label><input type="text" id="f-movie" placeholder="e.g. The Shining"></div>
-        <div class="fg"><label>Year</label><input type="text" id="f-year" placeholder="1980"></div>
-        <div class="fg"><label>Watch Date</label><input type="text" id="f-date" placeholder="10/11/2024"></div>
-        <div class="fg"><label>MPAA</label><select id="f-mpaa"><option value="">—</option><option>R</option><option>PG-13</option><option>PG</option><option>NR</option></select></div>
-        <div class="fg"><label>RT Score</label><input type="text" id="f-rt" placeholder="92%"></div>
-        <div class="fg"><label>Your Rating (0–5)</label><input type="number" id="f-rating" min="0" max="5" step="0.5" placeholder="4.5"></div>
-        <div class="fg"><label>Location</label><input type="text" id="f-location" placeholder="Marky Marburg"></div>
-        <div class="fg"><label>Type</label><select id="f-type"><option value="">Standard</option><option>Double Feature</option><option>Field Trip</option></select></div>
-        <div class="fg"><label>Selected By</label><input type="text" id="f-selected" placeholder="MATT"></div>
-        <div class="fg"><label>Event Name</label><input type="text" id="f-event" placeholder="Halloween 2024"></div>
-        <div class="fg full"><label>Notes</label><textarea id="f-notes" placeholder="Any notes…"></textarea></div>
-        <div class="fg full"><label>Poster URL</label><input type="text" id="f-poster" placeholder="auto-filled by lookup"></div>
-        <div class="fg"><label>TMDB ID</label><input type="text" id="f-tmdb" placeholder="auto-filled"></div>
-        <div class="fg"><label>IMDb ID</label><input type="text" id="f-imdb" placeholder="auto-filled"></div>
-        <div class="fg full"><label>Director</label><input type="text" id="f-director" placeholder="auto-filled"></div>
-        <div class="fg full"><label>Genre</label><input type="text" id="f-genre" placeholder="auto-filled"></div>
-        <div class="fg full"><label>Plot</label><textarea id="f-plot" placeholder="auto-filled"></textarea></div>
-      </div>
-    </div>
-    <div class="modal-actions" id="modal-actions"></div>
-  </div>
-</div>
-
-<!-- DELETE CONFIRM MODAL -->
-<div class="modal-overlay" id="del-modal" style="display:none" onclick="if(event.target===this)closeDelModal()">
-  <div class="modal del-modal">
-    <div class="del-ico">🗑️</div>
-    <div class="del-msg">Permanently delete</div>
-    <div class="del-name" id="del-name"></div>
-    <p style="font-size:12px;color:var(--muted);margin-bottom:16px">This cannot be undone.</p>
-    <div class="modal-actions" style="justify-content:center;border-top:none;padding-top:0">
-      <button class="btn-c" onclick="closeDelModal()">Cancel</button>
-      <button class="btn-del" onclick="confirmDelete()">Yes, Delete Forever</button>
     </div>
   </div>
 </div>
@@ -510,11 +510,19 @@ const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZ
 const OMDB_KEY='ca71506d';
 const TMDB_TOK='eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJkOWEzZTc3NmEyNGU3ODZhNzdjYTUzZDFiMzRlZDZkNyIsIm5iZiI6MTc3MjkzODEwNi43MTgwMDAyLCJzdWIiOiI2OWFjZTM3YTkyMTA2NmQyYmVkZDI3MzgiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0._tMaXxFhyxKQCUOFcAv9Ublvq1lT2Unj3tm5xl7MG_o';
 const ADMIN_PIN='1031';
-const DOTW_NAMES=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const DOTW=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const VIEWS=[
+  {id:'now',icon:'📅',label:'Now'},
+  {id:'sheet',icon:'📋',label:'Sheet'},
+  {id:'card',icon:'🎬',label:'Cards'},
+  {id:'list',icon:'📄',label:'List'},
+  {id:'stats',icon:'📊',label:'Stats'},
+  {id:'hof',icon:'🏆',label:'Hall of Fame'},
+];
 
 let movies=[],filtered=[],listFiltered=[];
 let isAdmin=false,view='now',sortCol='num',sortDir=1,page=1,pgSize=100;
-let editingId=null,deleteId=null,sidebarCollapsed=true;
+let editingId=null,deleteId=null;
 
 // ── SUPABASE ──
 async function sbFetch(path,opts={}){
@@ -548,16 +556,14 @@ async function loadMovies(){
   }
 }
 
-// ── DATE OF WEEK ──
+// ── DOTW ──
 function getDOTW(m){
-  const d=m.watch_date||m.date;
-  if(!d)return'';
+  const d=m.watch_date||m.date;if(!d)return'';
   let dt;
   if(/^\d{4}-\d{2}-\d{2}/.test(d))dt=new Date(d+'T12:00:00');
   else if(/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(d)){const[mo,dy,yr]=d.split('/');dt=new Date(+yr,+mo-1,+dy,12);}
-  else if(/^\d{4}$/.test(d))return'';
   else return'';
-  return DOTW_NAMES[dt.getDay()];
+  return DOTW[dt.getDay()];
 }
 
 // ── FILTERS ──
@@ -603,13 +609,7 @@ function applyListFilters(){
     if(mpaa&&m.mpaa!==mpaa)return false;
     if(type&&m.type!==type)return false;
     if(yr){const mx=m.date&&m.date.match(/\d{4}/);if(!mx||mx[0]!==yr)return false;}
-    if(rt!==''){
-      // rt is "lo-hi" e.g. "80-89"
-      const [lo,hi]=rt.split('-').map(Number);
-      const v=parseInt(m.rt)||0;
-      if(v<lo||v>hi)return false;
-    }
-    // exact star rating match
+    if(rt!==''){const[lo,hi]=rt.split('-').map(Number);const v=parseInt(m.rt)||0;if(v<lo||v>hi)return false;}
     if(rat!==''&&parseFloat(m.rating)!==parseFloat(rat))return false;
     if(dotw&&getDOTW(m)!==dotw)return false;
     return true;
@@ -627,7 +627,6 @@ function updateStats(){
   const rs=filtered.map(m=>parseFloat(m.rating)).filter(r=>!isNaN(r)&&r>0);
   document.getElementById('s-avg').textContent=rs.length?(rs.reduce((a,b)=>a+b,0)/rs.length).toFixed(1):'—';
 }
-
 function sortBy(col){
   if(sortCol===col)sortDir*=-1;else{sortCol=col;sortDir=1;}
   document.querySelectorAll('.sort-arr').forEach(e=>e.textContent='');
@@ -635,7 +634,7 @@ function sortBy(col){
   applyFilters();
 }
 
-// ── RENDER DISPATCHER ──
+// ── RENDER ──
 function render(){
   ['now','sheet','card','list','stats','hof'].forEach(v=>{
     const el=document.getElementById(v+'-view');if(el)el.style.display='none';
@@ -643,7 +642,7 @@ function render(){
   const el=document.getElementById(view+'-view');
   if(el)el.style.display=view==='card'?'grid':'block';
   const hasPag=['sheet','card','list'].includes(view);
-  document.getElementById('pagination').style.display=(hasPag||['now','stats','hof'].includes(view))?'flex':'none';
+  document.getElementById('pagination').style.display='flex';
   if(view==='now')renderNow();
   else if(view==='sheet')renderSheet();
   else if(view==='card')renderCards();
@@ -651,41 +650,28 @@ function render(){
   else if(view==='stats')renderStats();
   else if(view==='hof')renderHOF();
   if(hasPag)renderPagination();
-  else document.getElementById('pagination').innerHTML='';
+  else{document.getElementById('pagination').innerHTML=pgsizeHTML();}
 }
-
 function getPage(arr){const src=arr||filtered;return src.slice((page-1)*pgSize,page*pgSize);}
 
-// ── NOW VIEW ──
+// ── NOW ──
 function getMondayOf(d){
-  const dt=new Date(d);
-  const day=dt.getDay(); // 0=Sun
-  const diff=day===0?-6:1-day; // go back to Monday
-  dt.setDate(dt.getDate()+diff);
-  dt.setHours(0,0,0,0);
-  return dt;
+  const dt=new Date(d);const day=dt.getDay();
+  dt.setDate(dt.getDate()+(day===0?-6:1-day));dt.setHours(0,0,0,0);return dt;
 }
-function fmtDate(dt){
-  return (dt.getMonth()+1)+'/'+dt.getDate()+'/'+dt.getFullYear();
-}
-function fmtDateShort(dt){
-  const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  return months[dt.getMonth()]+' '+dt.getDate();
+function fmtShort(dt){
+  return ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][dt.getMonth()]+' '+dt.getDate();
 }
 
 function renderNow(){
   const nv=document.getElementById('now-view');
-  const today=new Date();
-  today.setHours(0,0,0,0);
+  const today=new Date();today.setHours(0,0,0,0);
   const thisMonday=getMondayOf(today);
-
-  // Build a map of ISO date string -> movie(s)
   const dateMap={};
   movies.forEach(m=>{
-    const dv=m.watch_date||m.date;
-    if(!dv)return;
+    const dv=m.watch_date||m.date;if(!dv)return;
     let dt;
-    if(/^\d{4}-\d{2}-\d{2}/.test(dv)){dt=new Date(dv+'T12:00:00');}
+    if(/^\d{4}-\d{2}-\d{2}/.test(dv))dt=new Date(dv+'T12:00:00');
     else if(/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(dv)){const[mo,dy,yr]=dv.split('/');dt=new Date(+yr,+mo-1,+dy,12);}
     else return;
     dt.setHours(0,0,0,0);
@@ -693,85 +679,49 @@ function renderNow(){
     if(!dateMap[key])dateMap[key]=[];
     dateMap[key].push(m);
   });
-
-  function weekCard(monday,label){
+  function weekCard(monday){
     const key=monday.toISOString().slice(0,10);
     const ms=dateMap[key]||[];
-    const isThisWeek=monday.getTime()===thisMonday.getTime();
-    const isFuture=monday.getTime()>thisMonday.getTime();
-    const displayDate=fmtDateShort(monday);
-    const dotw=DOTW_NAMES[monday.getDay()];
-
-    if(ms.length===0){
-      return `<div class="now-week ${isThisWeek?'this-week':''} ${isFuture?'future':''}" style="cursor:${isFuture?'default':'pointer'}">
-        <div>
-          <div class="nw-date ${isThisWeek?'this-week':''}">${displayDate}</div>
-          <div class="nw-dotw">${dotw}</div>
-        </div>
+    const isThis=monday.getTime()===thisMonday.getTime();
+    const isFut=monday.getTime()>thisMonday.getTime();
+    const disp=fmtShort(monday);
+    const dw=DOTW[monday.getDay()];
+    if(!ms.length){
+      return`<div class="now-week ${isThis?'this-week':''} ${isFut?'future':''} no-film">
+        <div><div class="nw-date ${isThis?'hl':''}">${disp}</div><div class="nw-dotw">${dw}</div></div>
         <div class="nw-no-poster">💀</div>
-        <div class="nw-info"><div class="nw-movie tbd">${isFuture?'— TBD —':'— Unknown —'}</div></div>
-        <div class="nw-num"></div>
+        <div class="nw-info"><div class="nw-movie tbd">${isFut?'— TBD —':'— Unknown —'}</div></div>
       </div>`;
     }
-
     return ms.map(m=>`
-      <div class="now-week ${isThisWeek?'this-week':''}" onclick="openDetail(${m.id})">
-        <div>
-          <div class="nw-date ${isThisWeek?'this-week':''}">${displayDate}</div>
-          <div class="nw-dotw">${dotw}</div>
-        </div>
-        ${m.poster_url?`<img class="nw-poster" src="${m.poster_url}" loading="lazy" onerror="this.outerHTML='<div class=nw-no-poster>🎬</div>'">`:`<div class="nw-no-poster">🎬</div>`}
+      <div class="now-week ${isThis?'this-week':''}" onclick="openDetail(${m.id})">
+        <div><div class="nw-date ${isThis?'hl':''}">${disp}</div><div class="nw-dotw">${dw}</div></div>
+        ${m.poster_url?`<img class="nw-poster" src="${m.poster_url}" loading="lazy" onclick="event.stopPropagation();openLightbox('${m.poster_url}')" onerror="this.outerHTML='<div class=nw-no-poster>🎬</div>'">`:`<div class="nw-no-poster">🎬</div>`}
         <div class="nw-info">
           <div class="nw-movie">${m.movie}</div>
-          <div class="nw-meta">
-            ${rtH(m.rt)}
-            ${starsH(m.rating)}
-            ${m.location&&m.location!=='---'&&m.location!=='NONE'?`<span class="nw-loc">📍 ${m.location}</span>`:''}
-          </div>
+          <div class="nw-meta">${rtH(m.rt)} ${starsH(m.rating)} ${m.location&&m.location!=='---'&&m.location!=='NONE'?`<span class="nw-loc">📍 ${m.location}</span>`:''}</div>
         </div>
         <div class="nw-num">#${m.num||''}</div>
-      </div>
-    `).join('');
+      </div>`).join('');
   }
-
-  // Previous 3 weeks
-  const prev3=[];
-  for(let i=3;i>=1;i--){
-    const d=new Date(thisMonday);d.setDate(d.getDate()-i*7);
-    prev3.push(d);
-  }
-  // Next 6 weeks
-  const next6=[];
-  for(let i=1;i<=6;i++){
-    const d=new Date(thisMonday);d.setDate(d.getDate()+i*7);
-    next6.push(d);
-  }
-
+  const prev3=[],next6=[];
+  for(let i=3;i>=1;i--){const d=new Date(thisMonday);d.setDate(d.getDate()-i*7);prev3.push(d);}
+  for(let i=1;i<=6;i++){const d=new Date(thisMonday);d.setDate(d.getDate()+i*7);next6.push(d);}
   nv.innerHTML=`
-    <div class="now-section">
-      <div class="now-section-title">Previous 3 Weeks <span></span></div>
-      ${prev3.map(d=>weekCard(d,'')).join('')}
-    </div>
-    <div class="now-section">
-      <div class="now-section-title">This Week <span></span></div>
-      ${weekCard(thisMonday,'')}
-    </div>
-    <div class="now-section">
-      <div class="now-section-title">Next Up <span></span></div>
-      ${next6.map(d=>weekCard(d,'')).join('')}
-    </div>
+    <div class="now-section"><div class="now-section-title">Previous 3 Weeks <span></span></div>${prev3.map(weekCard).join('')}</div>
+    <div class="now-section"><div class="now-section-title">This Week <span></span></div>${weekCard(thisMonday)}</div>
+    <div class="now-section"><div class="now-section-title">Next Up <span></span></div>${next6.map(weekCard).join('')}</div>
   `;
 }
 
 // ── SHEET ──
 function renderSheet(){
-  const th=document.getElementById('th-actions');if(th)th.style.display=isAdmin?'':'none';
   const rows=getPage();
-  if(!rows.length){document.getElementById('sheet-body').innerHTML='<tr><td colspan="14"><div class="empty"><div class="es">💀</div><p>NO FILMS FOUND</p></div></td></tr>';return;}
+  if(!rows.length){document.getElementById('sheet-body').innerHTML='<tr><td colspan="13"><div class="empty"><div class="es">💀</div><p>NO FILMS FOUND</p></div></td></tr>';return;}
   document.getElementById('sheet-body').innerHTML=rows.map(m=>`
     <tr onclick="openDetail(${m.id})">
       <td class="td-num">${m.num||'—'}</td>
-      <td class="td-poster">${m.poster_url?`<img src="${m.poster_url}" loading="lazy" onerror="this.parentNode.innerHTML='<div class=np>🎬</div>'">`:'<div class="np">🎬</div>'}</td>
+      <td class="td-poster" onclick="event.stopPropagation()">${m.poster_url?`<img src="${m.poster_url}" loading="lazy" onclick="openLightbox('${m.poster_url}')" onerror="this.parentNode.innerHTML='<div class=np>🎬</div>'">`:'<div class="np">🎬</div>'}</td>
       <td class="td-date">${m.date||'—'}</td>
       <td class="td-dotw">${getDOTW(m)||'—'}</td>
       <td class="td-movie" title="${esc(m.movie)}">${m.movie}</td>
@@ -783,9 +733,7 @@ function renderSheet(){
       <td>${m.location&&m.location!=='---'&&m.location!=='NONE'?`<span class="loc-tag">${m.location}</span>`:'<span style="color:var(--muted)">—</span>'}</td>
       <td>${m.event?`<span class="event-tag">${m.event}</span>`:''}</td>
       <td class="notes-cell" title="${esc(m.notes||'')}">${m.notes||''}</td>
-      ${isAdmin?`<td onclick="event.stopPropagation()"><button class="edit-btn" onclick="openEdit(${m.id})">✏ Edit</button></td>`:''}
-    </tr>
-  `).join('');
+    </tr>`).join('');
 }
 
 // ── CARDS ──
@@ -803,7 +751,11 @@ function renderCards(){
           <button class="dot-dd-item danger" onclick="promptDelete(${m.id});closeDotMenus()">🗑 Delete…</button>
         </div>
       </div>`:''}
-      ${m.poster_url?`<img class="card-poster" src="${m.poster_url}" loading="lazy" onerror="this.outerHTML='<div class=card-no-poster><div class=cnp-skull>💀</div><div class=cnp-title>${esc(m.movie)}</div></div>'">`:`<div class="card-no-poster"><div class="cnp-skull">💀</div><div class="cnp-title">${m.movie}</div></div>`}
+      ${m.poster_url
+        ?`<img class="card-poster" src="${m.poster_url}" loading="lazy"
+            onclick="event.stopPropagation();openLightbox('${m.poster_url}')"
+            onerror="this.outerHTML='<div class=card-no-poster><div class=cnp-skull>💀</div><div class=cnp-title>${esc(m.movie)}</div></div>'">`
+        :`<div class="card-no-poster"><div class="cnp-skull">💀</div><div class="cnp-title">${m.movie}</div></div>`}
       <div class="card-body">
         <div class="card-num">#${m.num||'?'}</div>
         <div class="card-title">${m.movie}</div>
@@ -815,8 +767,7 @@ function renderCards(){
         </div>
         ${m.notes?`<div class="card-note" title="${esc(m.notes||'')}">💬 ${m.notes}</div>`:''}
       </div>
-    </div>
-  `).join('');
+    </div>`).join('');
 }
 
 // ── LIST ──
@@ -836,178 +787,111 @@ function renderList(){
       <div class="lr-rating">${starsH(m.rating)}</div>
       <div class="lr-loc">${m.location&&m.location!=='---'&&m.location!=='NONE'?m.location:''}</div>
       <div class="lr-type">${m.type?`<span class="type-badge">${m.type}</span>`:''}</div>
-      ${isAdmin?`<div class="lr-act" onclick="event.stopPropagation()"><button class="edit-btn" style="padding:2px 6px" onclick="openEdit(${m.id})">✏</button></div>`:'<div class="lr-act"></div>'}
-    </div>
-  `).join('');
+    </div>`).join('');
 }
 
 // ── STATS ──
 function renderStats(){
-  const sv=document.getElementById('stats-view');
-  const ms=movies;
-  const grp=(xform)=>{
-    const map={};
-    ms.forEach(m=>{
-      const k=xform(m);
-      if(!k||k==='---'||k==='NONE'||k==='')return;
-      map[k]=(map[k]||0)+1;
-    });
-    return Object.entries(map).sort((a,b)=>b[1]-a[1]);
-  };
-
+  const sv=document.getElementById('stats-view');const ms=movies;
+  const grp=(xf)=>{const map={};ms.forEach(m=>{const k=xf(m);if(!k||k==='---'||k==='NONE'||k==='')return;map[k]=(map[k]||0)+1;});return Object.entries(map).sort((a,b)=>b[1]-a[1]);};
   const byLoc=grp(m=>m.location);
   const byMpaa=grp(m=>m.mpaa);
   const byRating=grp(m=>m.rating?String(parseFloat(m.rating).toFixed(1)):null);
   const byWatchYr=grp(m=>{const x=m.date&&m.date.match(/\d{4}/);return x?x[0]:null;});
   const byRelYr=grp(m=>m.year);
-  // DOTW stats
   const byDotw=grp(m=>getDOTW(m));
-  // Sort DOTW in order Mon-Sun
-  const dotwOrder=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
-  const byDotwSorted=dotwOrder.map(d=>[d,byDotw.find(([k])=>k===d)?.[1]||0]).filter(([,v])=>v>0);
-
-  // RT buckets with ranges
-  const rtRanges=[['90–100',90,100],['80–89',80,89],['70–79',70,79],['60–69',60,69],
-    ['50–59',50,59],['40–49',40,49],['30–39',30,39],['20–29',20,29],['10–19',10,19],['0–9',0,9],['N/A',null,null]];
-  const rtBuckets=rtRanges.map(([lbl,lo,hi])=>{
-    const count=lo===null?ms.filter(m=>!parseInt(m.rt)&&parseInt(m.rt)!==0).length
-      :ms.filter(m=>{const v=parseInt(m.rt);return !isNaN(v)&&v>=lo&&v<=hi;}).length;
-    return[lbl,count];
-  });
-
-  const titleMap={};
-  ms.forEach(m=>{
-    if(!m.movie||m.movie==='??'||m.movie==='---')return;
-    const k=m.movie.toLowerCase().trim();
-    if(!titleMap[k])titleMap[k]={title:m.movie,count:0};
-    titleMap[k].count++;
-  });
+  const dotwOrd=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  const byDotwS=dotwOrd.map(d=>[d,(byDotw.find(([k])=>k===d)||[,0])[1]]).filter(([,v])=>v>0);
+  const rtRanges=[['90–100',90,100],['80–89',80,89],['70–79',70,79],['60–69',60,69],['50–59',50,59],['40–49',40,49],['30–39',30,39],['20–29',20,29],['10–19',10,19],['0–9',0,9],['N/A',null,null]];
+  const rtBkts=rtRanges.map(([l,lo,hi])=>[l,lo===null?ms.filter(m=>{const v=parseInt(m.rt);return isNaN(v);}).length:ms.filter(m=>{const v=parseInt(m.rt);return !isNaN(v)&&v>=lo&&v<=hi;}).length]);
+  const titleMap={};ms.forEach(m=>{if(!m.movie||m.movie==='??'||m.movie==='---')return;const k=m.movie.toLowerCase().trim();if(!titleMap[k])titleMap[k]={title:m.movie,count:0};titleMap[k].count++;});
   const rewatched=Object.values(titleMap).filter(x=>x.count>1).sort((a,b)=>b.count-a.count);
   const fieldTrips=ms.filter(m=>m.type==='Field Trip').length;
   const dblFeat=ms.filter(m=>m.type==='Double Feature').length;
   const withRat=ms.filter(m=>m.rating&&parseFloat(m.rating)>0);
-  const avgRatVal=withRat.length?(withRat.reduce((a,m)=>a+parseFloat(m.rating),0)/withRat.length).toFixed(2):'—';
+  const avgRat=withRat.length?(withRat.reduce((a,m)=>a+parseFloat(m.rating),0)/withRat.length).toFixed(2):'—';
   const withRt=ms.filter(m=>parseInt(m.rt)>0);
-  const avgRtVal=withRt.length?(withRt.reduce((a,m)=>a+parseInt(m.rt),0)/withRt.length).toFixed(1):'—';
-
-  function blk(title,rows,maxOverride){
-    const mx=maxOverride||Math.max(...rows.map(r=>r[1]),1);
-    return `<div class="stat-card"><h3>${title}</h3>${rows.slice(0,15).map(([k,v])=>`
-      <div class="sri"><span class="sri-lbl">${k}</span><span class="sri-val">${v}</span></div>
-      <div class="sbar"><div class="sbar-fill" style="width:${Math.round(v/mx*100)}%"></div></div>
-    `).join('')}</div>`;
-  }
-
+  const avgRt=withRt.length?(withRt.reduce((a,m)=>a+parseInt(m.rt),0)/withRt.length).toFixed(1):'—';
+  function blk(title,rows,mx){const m=mx||Math.max(...rows.map(r=>r[1]),1);return`<div class="stat-card"><h3>${title}</h3>${rows.slice(0,15).map(([k,v])=>`<div class="sri"><span class="sri-lbl">${k}</span><span class="sri-val">${v}</span></div><div class="sbar"><div class="sbar-fill" style="width:${Math.round(v/m*100)}%"></div></div>`).join('')}</div>`;}
   sv.innerHTML=`
-    <div style="margin-bottom:16px">
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:3px;color:var(--orange)">📊 HFMDB STATS</div>
-      <div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-top:2px">${ms.length} total films · all time</div>
-    </div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;margin-bottom:16px">
-      ${[[ms.length,'Total Films'],[withRat.length,'With Ratings'],[fieldTrips,'Field Trips'],[dblFeat,'Double Features'],[rewatched.length,'Multi-Watch'],[avgRtVal+'%','Avg RT'],[byLoc.length,'Venues'],[avgRatVal,'Avg ★']].map(([v,l])=>`
-        <div class="stat-card" style="padding:10px"><div class="stat-big">${v}</div><div class="stat-lbl2">${l}</div></div>
-      `).join('')}
+    <div style="margin-bottom:14px"><div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:3px;color:var(--orange)">📊 HFMDB STATS</div><div style="font-family:'Barlow Condensed',sans-serif;font-size:10px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-top:2px">${ms.length} total films</div></div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(115px,1fr));gap:9px;margin-bottom:14px">
+      ${[[ms.length,'Total Films'],[withRat.length,'With Ratings'],[fieldTrips,'Field Trips'],[dblFeat,'Double Features'],[rewatched.length,'Multi-Watch'],[avgRt+'%','Avg RT'],[byLoc.length,'Venues'],[avgRat,'Avg ★']].map(([v,l])=>`<div class="stat-card" style="padding:9px"><div class="stat-big">${v}</div><div class="stat-lbl2">${l}</div></div>`).join('')}
     </div>
     <div class="stats-grid">
       ${blk('By Location',byLoc)}
       ${blk('By Watch Year',byWatchYr.sort((a,b)=>a[0]-b[0]))}
       ${blk('Top Release Years',byRelYr.slice(0,15))}
       ${blk('By MPAA Rating',byMpaa)}
-      ${blk('Day of the Week',byDotwSorted)}
-      <div class="stat-card"><h3>Rotten Tomatoes</h3>
-        ${rtBuckets.map(([k,v])=>`
-          <div class="sri"><span class="sri-lbl">${k}%</span><span class="sri-val">${v}</span></div>
-          <div class="sbar"><div class="sbar-fill" style="width:${ms.length?Math.round(v/ms.length*100):0}%"></div></div>
-        `).join('')}
-      </div>
+      ${blk('Day of the Week',byDotwS)}
+      <div class="stat-card"><h3>Rotten Tomatoes</h3>${rtBkts.map(([k,v])=>`<div class="sri"><span class="sri-lbl">${k}</span><span class="sri-val">${v}</span></div><div class="sbar"><div class="sbar-fill" style="width:${ms.length?Math.round(v/ms.length*100):0}%"></div></div>`).join('')}</div>
       ${blk('Your Star Ratings',byRating.sort((a,b)=>parseFloat(b[0])-parseFloat(a[0])))}
-      ${rewatched.length?`<div class="stat-card"><h3>🔁 Rewatched (${rewatched.length})</h3>
-        ${rewatched.slice(0,15).map(x=>`<div class="sri"><span class="sri-lbl">${x.title}</span><span class="sri-val">${x.count}×</span></div>`).join('')}
-      </div>`:''}
-    </div>
-  `;
+      ${rewatched.length?`<div class="stat-card"><h3>🔁 Rewatched (${rewatched.length})</h3>${rewatched.slice(0,15).map(x=>`<div class="sri"><span class="sri-lbl">${x.title}</span><span class="sri-val">${x.count}×</span></div>`).join('')}</div>`:''}
+    </div>`;
 }
 
 // ── HOF ──
 function renderHOF(){
   const hv=document.getElementById('hof-view');
-  const titleMap={};
-  movies.forEach(m=>{
-    if(!m.movie||m.movie==='??'||m.movie==='---')return;
-    const k=m.movie.toLowerCase().trim();
-    if(!titleMap[k])titleMap[k]={title:m.movie,count:0,dates:[],rating:0,rt:0,poster:null};
-    titleMap[k].count++;
-    const yr=m.date&&m.date.match(/\d{4}/);if(yr)titleMap[k].dates.push(yr[0]);
-    if(m.rating&&parseFloat(m.rating)>titleMap[k].rating)titleMap[k].rating=parseFloat(m.rating);
-    if(m.rt&&parseInt(m.rt)>titleMap[k].rt)titleMap[k].rt=parseInt(m.rt);
-    if(!titleMap[k].poster&&m.poster_url)titleMap[k].poster=m.poster_url;
-  });
-  const hof=Object.values(titleMap).filter(x=>x.count>1).sort((a,b)=>b.count-a.count||b.rating-a.rating).slice(0,50);
+  const tm={};movies.forEach(m=>{if(!m.movie||m.movie==='??'||m.movie==='---')return;const k=m.movie.toLowerCase().trim();if(!tm[k])tm[k]={title:m.movie,count:0,dates:[],rating:0,rt:0,poster:null};tm[k].count++;const yr=m.date&&m.date.match(/\d{4}/);if(yr)tm[k].dates.push(yr[0]);if(m.rating&&parseFloat(m.rating)>tm[k].rating)tm[k].rating=parseFloat(m.rating);if(m.rt&&parseInt(m.rt)>tm[k].rt)tm[k].rt=parseInt(m.rt);if(!tm[k].poster&&m.poster_url)tm[k].poster=m.poster_url;});
+  const hof=Object.values(tm).filter(x=>x.count>1).sort((a,b)=>b.count-a.count||b.rating-a.rating).slice(0,50);
   if(!hof.length){hv.innerHTML='<div class="empty" style="margin-top:60px"><div class="es">🏆</div><p>NO REWATCHES YET</p></div>';return;}
-  hv.innerHTML=`
-    <div class="hof-hdr"><h2>🏆 HALL OF FAME</h2><p>Films watched more than once · sorted by most rewatched</p></div>
-    <div class="hof-grid">
-      ${hof.map((m,i)=>`
-        <div class="hof-card">
-          <div class="hof-rank ${i<3?'top3':''}">${i+1}</div>
-          ${m.poster?`<img src="${m.poster}" style="width:44px;height:66px;object-fit:cover;border-radius:3px;flex-shrink:0" loading="lazy">`:`<div style="width:44px;height:66px;background:var(--surface3);border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:16px;opacity:.4;flex-shrink:0">💀</div>`}
-          <div class="hof-info">
-            <div class="hof-title">${m.title}</div>
-            <div class="hof-count">${m.count}× watched</div>
-            <div class="hof-years">${[...new Set(m.dates)].sort().join(', ')}</div>
-            <div style="margin-top:3px;display:flex;gap:5px;align-items:center">
-              ${m.rt?rtH(m.rt+'%'):''}
-              <span style="font-size:11px;color:var(--orange)">${m.rating?'★'+m.rating:''}</span>
-            </div>
-          </div>
+  hv.innerHTML=`<div class="hof-hdr"><h2>🏆 HALL OF FAME</h2><p>Films watched more than once · sorted by most rewatched</p></div>
+    <div class="hof-grid">${hof.map((m,i)=>`
+      <div class="hof-card">
+        <div class="hof-rank ${i<3?'top3':''}">${i+1}</div>
+        ${m.poster?`<img src="${m.poster}" style="width:42px;height:62px;object-fit:cover;border-radius:3px;flex-shrink:0" loading="lazy">`:`<div style="width:42px;height:62px;background:var(--surface3);border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:15px;opacity:.4;flex-shrink:0">💀</div>`}
+        <div class="hof-info">
+          <div class="hof-title">${m.title}</div>
+          <div class="hof-count">${m.count}× watched</div>
+          <div class="hof-years">${[...new Set(m.dates)].sort().join(', ')}</div>
+          <div style="margin-top:3px;display:flex;gap:5px;align-items:center">${m.rt?rtH(m.rt+'%'):''}<span style="font-size:11px;color:var(--orange)">${m.rating?'★'+m.rating:''}</span></div>
         </div>
-      `).join('')}
-    </div>
-  `;
+      </div>`).join('')}</div>`;
 }
 
 // ── PAGINATION ──
+function pgsizeHTML(){
+  return`<select class="pgsize-sel" onchange="changePgSize(this.value)" title="Rows per page">${[25,50,75,100,150,200,250,300,350,400,450,500,600,700].map(n=>`<option value="${n}"${n===pgSize?' selected':''}>${n}</option>`).join('')}</select>`;
+}
 function renderPagination(){
   const src=view==='list'?listFiltered:filtered;
   const total=Math.ceil(src.length/pgSize);
   const pag=document.getElementById('pagination');
-  const pgSizeHTML=`<select class="pgsize-sel" onchange="changePgSize(this.value)" title="Rows per page">
-    ${[25,50,75,100,150,200,250,300,350,400,450,500,600,700].map(n=>`<option value="${n}"${n===pgSize?' selected':''}>${n}</option>`).join('')}
-  </select>`;
-  if(!['sheet','card','list'].includes(view)){
-    pag.innerHTML=pgSizeHTML;return;
-  }
-  if(total<=1){
-    pag.innerHTML=`<span class="pg-info">${src.length} films</span>${pgSizeHTML}`;return;
-  }
+  const ps=pgsizeHTML();
+  if(!['sheet','card','list'].includes(view)){pag.innerHTML=ps;return;}
+  if(total<=1){pag.innerHTML=`<span class="pg-info">${src.length} films</span>${ps}`;return;}
   let h=`<button class="pg-btn" onclick="goPage(${page-1})" ${page===1?'disabled':''}>←</button>`;
   const s=Math.max(1,page-2),e=Math.min(total,page+2);
   if(s>1)h+=`<button class="pg-btn" onclick="goPage(1)">1</button>${s>2?'<span class="pg-info">…</span>':''}`;
   for(let i=s;i<=e;i++)h+=`<button class="pg-btn ${i===page?'on':''}" onclick="goPage(${i})">${i}</button>`;
   if(e<total)h+=`${e<total-1?'<span class="pg-info">…</span>':''}<button class="pg-btn" onclick="goPage(${total})">${total}</button>`;
   h+=`<button class="pg-btn" onclick="goPage(${page+1})" ${page===total?'disabled':''}>→</button>`;
-  h+=`<span class="pg-info">${((page-1)*pgSize)+1}–${Math.min(page*pgSize,src.length)} of ${src.length}</span>`;
-  h+=pgSizeHTML;
+  h+=`<span class="pg-info">${((page-1)*pgSize)+1}–${Math.min(page*pgSize,src.length)} of ${src.length}</span>${ps}`;
   pag.innerHTML=h;
 }
-function goPage(p){
-  const src=view==='list'?listFiltered:filtered;
-  const t=Math.ceil(src.length/pgSize);
-  if(p<1||p>t)return;
-  page=p;render();document.getElementById('content').scrollTop=0;
-}
+function goPage(p){const src=view==='list'?listFiltered:filtered;const t=Math.ceil(src.length/pgSize);if(p<1||p>t)return;page=p;render();document.getElementById('content').scrollTop=0;}
 function changePgSize(v){pgSize=parseInt(v);page=1;render();}
 
-// ── VIEW / SIDEBAR ──
+// ── VIEWS / SIDEBAR / DROPDOWN ──
 function setView(v){
   view=v;
-  ['now','sheet','card','list','stats','hof'].forEach(x=>document.getElementById('nv-'+x).classList.toggle('active',x===v));
+  ['now','sheet','card','list','stats','hof'].forEach(x=>{
+    document.getElementById('nv-'+x).classList.toggle('active',x===v);
+    document.getElementById('vdi-'+x).classList.toggle('active',x===v);
+  });
+  const vd=VIEWS.find(x=>x.id===v);
+  if(vd){document.getElementById('view-btn-icon').textContent=vd.icon;document.getElementById('view-btn-label').textContent=vd.label;}
   page=1;render();
 }
-function toggleSidebar(){
-  sidebarCollapsed=!sidebarCollapsed;
-  document.getElementById('sidebar').classList.toggle('collapsed',sidebarCollapsed);
-}
+function openSidebar(){document.getElementById('sidebar').classList.add('open');document.getElementById('drawer-overlay').classList.add('open');}
+function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('drawer-overlay').classList.remove('open');}
+function toggleViewDropdown(){document.getElementById('view-dropdown').classList.toggle('open');}
+function closeViewDD(){document.getElementById('view-dropdown').classList.remove('open');}
+document.addEventListener('click',e=>{
+  if(!e.target.closest('.view-switcher'))closeViewDD();
+  if(!e.target.closest('.card-menu-wrap'))closeDotMenus();
+});
 
 // ── ADMIN ──
 function toggleAdmin(){
@@ -1032,88 +916,139 @@ function updateAdminUI(){
 // ── DOT MENUS ──
 function toggleDotMenu(id,e){e.stopPropagation();closeDotMenus();const dd=document.getElementById('dot-'+id);if(dd)dd.classList.add('open');}
 function closeDotMenus(){document.querySelectorAll('.dot-dropdown.open').forEach(d=>d.classList.remove('open'));}
-document.addEventListener('click',closeDotMenus);
 
-// ── DETAIL MODAL ──
+// ── FULL SCREEN DETAIL ──
 function openDetail(id){
   const m=movies.find(x=>x.id===id);if(!m)return;
   editingId=id;
-  document.getElementById('modal-h').textContent=m.movie;
-  document.getElementById('lookup-section').style.display='none';
-  document.getElementById('detail-view').style.display='block';
-  document.getElementById('edit-form').style.display='none';
-  if(m.poster_url){document.getElementById('dv-poster').src=m.poster_url;document.getElementById('dv-poster').style.display='block';document.getElementById('dv-noi').style.display='none';}
-  else{document.getElementById('dv-poster').style.display='none';document.getElementById('dv-noi').style.display='flex';}
-  document.getElementById('dv-title').textContent=m.movie;
-  document.getElementById('dv-yr').textContent=(m.year||'')+(m.runtime?' · '+m.runtime:'');
-  document.getElementById('dv-rt').innerHTML=rtH(m.rt);
-  document.getElementById('dv-rating').innerHTML=starsH(m.rating)+(m.rating?` <span style="color:var(--dim);font-size:12px">${m.rating}/5</span>`:'');
-  document.getElementById('dv-loc').innerHTML=m.location&&m.location!=='---'&&m.location!=='NONE'?`<span class="loc-tag">${m.location}</span>`:'—';
-  document.getElementById('dv-date').textContent=(m.date||'—')+(getDOTW(m)?' ('+getDOTW(m)+')':'');
-  document.getElementById('dv-mpaa').innerHTML=mpaaH(m.mpaa)||'—';
-  document.getElementById('dv-director').textContent=m.director||'—';
-  document.getElementById('dv-runtime').textContent=m.runtime||'—';
-  const pl=document.getElementById('dv-plot');
-  if(m.plot){pl.textContent=m.plot;pl.style.display='block';}else pl.style.display='none';
-  document.getElementById('dv-genre').textContent=m.genre||'—';
-  document.getElementById('dv-type').innerHTML=m.type?`<span class="type-badge">${m.type}</span>`:'Standard';
-  document.getElementById('dv-selected').textContent=m.selected||'—';
-  document.getElementById('dv-event').textContent=m.event||'—';
-  document.getElementById('dv-notes').textContent=m.notes||'—';
-  const acts=document.getElementById('modal-actions');
-  acts.innerHTML=isAdmin
-    ?`<button class="btn-c" onclick="closeModal()">Close</button><button class="btn-s" onclick="switchToEdit()">✏ Edit</button>`
-    :`<button class="btn-c" onclick="closeModal()">Close</button>`;
-  document.getElementById('edit-modal').style.display='flex';
+  showFsDetail(m);
+  document.getElementById('fs-overlay').style.display='flex';
 }
 
-function switchToEdit(){
+function showFsDetail(m){
+  document.getElementById('fs-title').textContent=m.movie;
+  const actions=document.getElementById('fs-actions');
+  if(isAdmin){
+    actions.innerHTML=`<button class="btn-edit" onclick="showFsEdit()">✏ Edit</button><button class="fs-close" onclick="closeFsOverlay()">✕</button>`;
+  } else {
+    actions.innerHTML=`<button class="fs-close" onclick="closeFsOverlay()">✕</button>`;
+  }
+  const dotw=getDOTW(m);
+  document.getElementById('fs-body').innerHTML=`
+    <div class="fs-hero">
+      <div class="fs-poster-col" style="width:${m.poster_url?'220px':'80px'}">
+        ${m.poster_url
+          ?`<img src="${m.poster_url}" alt="${esc(m.movie)}" onclick="openLightbox('${m.poster_url}')" loading="lazy">`
+          :`<div class="no-poster">💀</div>`}
+      </div>
+      <div class="fs-info-col">
+        <div class="fs-movie-title">${m.movie}</div>
+        <div class="fs-year-line">${[m.year,m.runtime,m.genre].filter(Boolean).join(' · ')}</div>
+        <div class="fs-meta-grid">
+          <div class="fs-meta-item"><div class="fs-meta-lbl">RT Score</div><div class="fs-meta-val">${rtH(m.rt)||'—'}</div></div>
+          <div class="fs-meta-item"><div class="fs-meta-lbl">Your Rating</div><div class="fs-meta-val">${starsH(m.rating)} ${m.rating?`<span style="color:var(--dim);font-size:12px">${m.rating}/5</span>`:''}</div></div>
+          <div class="fs-meta-item"><div class="fs-meta-lbl">MPAA</div><div class="fs-meta-val">${mpaaH(m.mpaa)||'—'}</div></div>
+          <div class="fs-meta-item"><div class="fs-meta-lbl">Watch Date</div><div class="fs-meta-val">${m.date||'—'}${dotw?` <span style="color:var(--dim);font-size:12px">(${dotw})</span>`:''}</div></div>
+          <div class="fs-meta-item"><div class="fs-meta-lbl">Location</div><div class="fs-meta-val">${m.location&&m.location!=='---'&&m.location!=='NONE'?`<span class="loc-tag">${m.location}</span>`:'—'}</div></div>
+          <div class="fs-meta-item"><div class="fs-meta-lbl">Director</div><div class="fs-meta-val" style="color:var(--dim)">${m.director||'—'}</div></div>
+          <div class="fs-meta-item"><div class="fs-meta-lbl">Type</div><div class="fs-meta-val">${m.type?`<span class="type-badge">${m.type}</span>`:'Standard'}</div></div>
+          <div class="fs-meta-item"><div class="fs-meta-lbl">Event</div><div class="fs-meta-val">${m.event?`<span class="event-tag">${m.event}</span>`:'—'}</div></div>
+          <div class="fs-meta-item"><div class="fs-meta-lbl">Selected By</div><div class="fs-meta-val">${m.selected||'—'}</div></div>
+          <div class="fs-meta-item"><div class="fs-meta-lbl">Entry #</div><div class="fs-meta-val" style="color:var(--dim)">${m.num||'—'}</div></div>
+        </div>
+        ${m.plot?`<div class="fs-plot">${m.plot}</div>`:''}
+        ${m.notes?`<div class="fs-notes-box"><div class="fs-notes-lbl">Notes</div>${m.notes}</div>`:''}
+      </div>
+    </div>`;
+}
+
+function showFsEdit(){
   const m=movies.find(x=>x.id===editingId);if(!m)return;
-  document.getElementById('detail-view').style.display='none';
-  document.getElementById('edit-form').style.display='block';
-  document.getElementById('lookup-section').style.display='block';
-  document.getElementById('modal-h').textContent='EDIT FILM';
-  document.getElementById('lookup-q').value=m.movie||'';
-  document.getElementById('lookup-status').textContent='';
-  fillForm(m);
-  document.getElementById('modal-actions').innerHTML=`<button class="btn-c" onclick="closeModal()">Cancel</button><button class="btn-s" onclick="saveMovie()">💾 Save</button>`;
+  document.getElementById('fs-title').textContent='EDIT FILM';
+  const actions=document.getElementById('fs-actions');
+  actions.innerHTML=`<button class="btn-c" onclick="showFsDetail(movies.find(x=>x.id===editingId))">← Back</button><button class="btn-s" onclick="saveMovie()">💾 Save</button><button class="fs-close" onclick="closeFsOverlay()">✕</button>`;
+  document.getElementById('fs-body').innerHTML=`
+    <div class="fs-edit-wrap">
+      <div class="lookup-bar">
+        <input type="text" class="lu-inp" id="lookup-q" value="${esc(m.movie||'')}" placeholder="Type title to auto-fill…" onkeydown="if(event.key==='Enter')doLookup()">
+        <button class="lu-btn" id="lookup-btn" onclick="doLookup()">🎬 Lookup</button>
+      </div>
+      <div class="lu-status" id="lookup-status"></div>
+      <div class="fg-grid">
+        <div class="fg full"><label>Movie Title *</label><input type="text" id="f-movie" placeholder="e.g. The Shining" value="${esc(m.movie||'')}"></div>
+        <div class="fg"><label>Year</label><input type="text" id="f-year" value="${esc(m.year||'')}"></div>
+        <div class="fg"><label>Watch Date</label><input type="text" id="f-date" value="${esc(m.date||'')}"></div>
+        <div class="fg"><label>MPAA</label><select id="f-mpaa"><option value="">—</option><option${m.mpaa==='R'?' selected':''}>R</option><option${m.mpaa==='PG-13'?' selected':''}>PG-13</option><option${m.mpaa==='PG'?' selected':''}>PG</option><option${m.mpaa==='NR'?' selected':''}>NR</option></select></div>
+        <div class="fg"><label>RT Score</label><input type="text" id="f-rt" value="${esc(m.rt||'')}"></div>
+        <div class="fg"><label>Your Rating (0–5)</label><input type="number" id="f-rating" min="0" max="5" step="0.5" value="${m.rating||''}"></div>
+        <div class="fg"><label>Location</label><input type="text" id="f-location" value="${esc(m.location||'')}"></div>
+        <div class="fg"><label>Type</label><select id="f-type"><option value="">Standard</option><option${m.type==='Double Feature'?' selected':''}>Double Feature</option><option${m.type==='Field Trip'?' selected':''}>Field Trip</option></select></div>
+        <div class="fg"><label>Selected By</label><input type="text" id="f-selected" value="${esc(m.selected||'')}"></div>
+        <div class="fg"><label>Event Name</label><input type="text" id="f-event" value="${esc(m.event||'')}"></div>
+        <div class="fg full"><label>Notes</label><textarea id="f-notes">${esc(m.notes||'')}</textarea></div>
+        <div class="fg full"><label>Poster URL</label><input type="text" id="f-poster" value="${esc(m.poster_url||'')}"></div>
+        <div class="fg"><label>TMDB ID</label><input type="text" id="f-tmdb" value="${m.tmdb_id||''}"></div>
+        <div class="fg"><label>IMDb ID</label><input type="text" id="f-imdb" value="${esc(m.imdb_id||'')}"></div>
+        <div class="fg full"><label>Director</label><input type="text" id="f-director" value="${esc(m.director||'')}"></div>
+        <div class="fg full"><label>Genre</label><input type="text" id="f-genre" value="${esc(m.genre||'')}"></div>
+        <div class="fg full"><label>Plot</label><textarea id="f-plot">${esc(m.plot||'')}</textarea></div>
+      </div>
+      ${isAdmin?`<div style="display:flex;justify-content:flex-end;margin-top:16px;padding-top:14px;border-top:1px solid var(--border)">
+        <button class="btn-del" style="margin-right:auto" onclick="promptDelete(editingId)">🗑 Delete Film…</button>
+      </div>`:''}
+    </div>`;
 }
 
 function openAdd(){
   editingId=null;
-  document.getElementById('modal-h').textContent='ADD FILM';
-  document.getElementById('lookup-section').style.display='block';
-  document.getElementById('detail-view').style.display='none';
-  document.getElementById('edit-form').style.display='block';
-  document.getElementById('lookup-q').value='';
-  document.getElementById('lookup-status').textContent='';
-  fillForm({});
-  document.getElementById('modal-actions').innerHTML=`<button class="btn-c" onclick="closeModal()">Cancel</button><button class="btn-s" onclick="saveMovie()">💾 Save Film</button>`;
-  document.getElementById('edit-modal').style.display='flex';
+  document.getElementById('fs-title').textContent='ADD FILM';
+  const actions=document.getElementById('fs-actions');
+  actions.innerHTML=`<button class="btn-s" onclick="saveMovie()">💾 Save Film</button><button class="fs-close" onclick="closeFsOverlay()">✕</button>`;
+  document.getElementById('fs-body').innerHTML=`
+    <div class="fs-edit-wrap">
+      <div class="lookup-bar">
+        <input type="text" class="lu-inp" id="lookup-q" placeholder="Type title to auto-fill…" onkeydown="if(event.key==='Enter')doLookup()">
+        <button class="lu-btn" id="lookup-btn" onclick="doLookup()">🎬 Lookup</button>
+      </div>
+      <div class="lu-status" id="lookup-status"></div>
+      <div class="fg-grid">
+        <div class="fg full"><label>Movie Title *</label><input type="text" id="f-movie" placeholder="e.g. The Shining"></div>
+        <div class="fg"><label>Year</label><input type="text" id="f-year"></div>
+        <div class="fg"><label>Watch Date</label><input type="text" id="f-date" placeholder="10/11/2024"></div>
+        <div class="fg"><label>MPAA</label><select id="f-mpaa"><option value="">—</option><option>R</option><option>PG-13</option><option>PG</option><option>NR</option></select></div>
+        <div class="fg"><label>RT Score</label><input type="text" id="f-rt" placeholder="92%"></div>
+        <div class="fg"><label>Your Rating (0–5)</label><input type="number" id="f-rating" min="0" max="5" step="0.5" placeholder="4.5"></div>
+        <div class="fg"><label>Location</label><input type="text" id="f-location" placeholder="Marky Marburg"></div>
+        <div class="fg"><label>Type</label><select id="f-type"><option value="">Standard</option><option>Double Feature</option><option>Field Trip</option></select></div>
+        <div class="fg"><label>Selected By</label><input type="text" id="f-selected" placeholder="MATT"></div>
+        <div class="fg"><label>Event Name</label><input type="text" id="f-event" placeholder="Halloween 2024"></div>
+        <div class="fg full"><label>Notes</label><textarea id="f-notes" placeholder="Any notes…"></textarea></div>
+        <div class="fg full"><label>Poster URL</label><input type="text" id="f-poster" placeholder="auto-filled by lookup"></div>
+        <div class="fg"><label>TMDB ID</label><input type="text" id="f-tmdb" placeholder="auto-filled"></div>
+        <div class="fg"><label>IMDb ID</label><input type="text" id="f-imdb" placeholder="auto-filled"></div>
+        <div class="fg full"><label>Director</label><input type="text" id="f-director" placeholder="auto-filled"></div>
+        <div class="fg full"><label>Genre</label><input type="text" id="f-genre" placeholder="auto-filled"></div>
+        <div class="fg full"><label>Plot</label><textarea id="f-plot" placeholder="auto-filled"></textarea></div>
+      </div>
+    </div>`;
+  document.getElementById('fs-overlay').style.display='flex';
 }
 
 function openEdit(id){
-  const m=movies.find(x=>x.id===id);if(!m)return;
   editingId=id;
-  document.getElementById('modal-h').textContent='EDIT FILM';
-  document.getElementById('lookup-section').style.display='block';
-  document.getElementById('detail-view').style.display='none';
-  document.getElementById('edit-form').style.display='block';
-  document.getElementById('lookup-q').value=m.movie||'';
-  document.getElementById('lookup-status').textContent='';
-  fillForm(m);
-  document.getElementById('modal-actions').innerHTML=`<button class="btn-c" onclick="closeModal()">Cancel</button><button class="btn-s" onclick="saveMovie()">💾 Save</button>`;
-  document.getElementById('edit-modal').style.display='flex';
+  const m=movies.find(x=>x.id===id);if(!m)return;
+  openDetail(id);
+  showFsEdit();
 }
 
-function fillForm(m){
-  const f=(id,v)=>{const el=document.getElementById(id);if(el)el.value=v||'';};
-  f('f-movie',m.movie);f('f-year',m.year);f('f-date',m.date);f('f-mpaa',m.mpaa);
-  f('f-rt',m.rt);f('f-rating',m.rating);f('f-location',m.location);f('f-type',m.type);
-  f('f-selected',m.selected);f('f-event',m.event);f('f-notes',m.notes);f('f-poster',m.poster_url);
-  f('f-tmdb',m.tmdb_id);f('f-imdb',m.imdb_id);f('f-director',m.director);f('f-genre',m.genre);f('f-plot',m.plot);
+function closeFsOverlay(){document.getElementById('fs-overlay').style.display='none';editingId=null;}
+
+// ── LIGHTBOX ──
+function openLightbox(url){
+  document.getElementById('lightbox-img').src=url;
+  document.getElementById('lightbox').style.display='flex';
 }
-function closeModal(){document.getElementById('edit-modal').style.display='none';editingId=null;}
+function closeLightbox(){document.getElementById('lightbox').style.display='none';}
 
 // ── DELETE ──
 function promptDelete(id){
@@ -1126,7 +1061,7 @@ async function confirmDelete(){
   if(!deleteId)return;
   try{
     await sbFetch('movies?id=eq.'+deleteId,{method:'DELETE',prefer:'return=minimal'});
-    closeDelModal();closeModal();await loadMovies();toast('🗑 Film deleted');
+    closeDelModal();closeFsOverlay();await loadMovies();toast('🗑 Film deleted');
   }catch(e){toast('❌ Delete failed: '+e.message,'err');}
 }
 function closeDelModal(){document.getElementById('del-modal').style.display='none';deleteId=null;}
@@ -1137,7 +1072,7 @@ async function doLookup(){
   const btn=document.getElementById('lookup-btn'),status=document.getElementById('lookup-status');
   btn.textContent='⏳…';btn.classList.add('busy');status.textContent='Searching OMDb…';
   try{
-    const yr=document.getElementById('f-year').value.trim();
+    const yr=(document.getElementById('f-year')||{}).value||'';
     const oRes=await fetch(`https://www.omdbapi.com/?t=${encodeURIComponent(q)}${yr?'&y='+yr:''}&apikey=${OMDB_KEY}`);
     const omdb=await oRes.json();
     if(omdb.Response==='True'){
@@ -1145,88 +1080,67 @@ async function doLookup(){
       f('f-movie',omdb.Title||q);f('f-year',omdb.Year);f('f-mpaa',normMpaa(omdb.Rated));
       f('f-director',omdb.Director);f('f-genre',omdb.Genre);f('f-plot',omdb.Plot);f('f-imdb',omdb.imdbID);
       const rts=(omdb.Ratings||[]).find(r=>r.Source==='Rotten Tomatoes');
-      if(rts)document.getElementById('f-rt').value=rts.Value;
+      if(rts&&document.getElementById('f-rt'))document.getElementById('f-rt').value=rts.Value;
       status.textContent='✅ OMDb found — fetching poster…';
     }else{status.textContent='⚠️ OMDb: '+(omdb.Error||'not found');}
     const tRes=await fetch(`https://api.themoviedb.org/3/search/movie?query=${encodeURIComponent(q)}${yr?'&year='+yr:''}`,{headers:{'Authorization':'Bearer '+TMDB_TOK}});
     const tData=await tRes.json();
     const hit=tData.results&&tData.results[0];
     if(hit){
-      document.getElementById('f-tmdb').value=hit.id||'';
-      if(hit.poster_path)document.getElementById('f-poster').value='https://image.tmdb.org/t/p/w500'+hit.poster_path;
+      if(document.getElementById('f-tmdb'))document.getElementById('f-tmdb').value=hit.id||'';
+      if(hit.poster_path&&document.getElementById('f-poster'))document.getElementById('f-poster').value='https://image.tmdb.org/t/p/w500'+hit.poster_path;
       status.textContent='✅ Auto-filled from OMDb + TMDB. Review and save.';
     }else if(omdb.Response==='True'){status.textContent='✅ OMDb filled. No TMDB poster.';}
     else{status.textContent='❌ Not found. Fill manually.';}
   }catch(e){status.textContent='❌ Error: '+e.message;}
   btn.textContent='🎬 Lookup';btn.classList.remove('busy');
 }
-
 function normMpaa(r){if(!r)return'';if(r==='PG-13'||r==='PG13')return'PG-13';if(r==='PG')return'PG';if(r==='R')return'R';if(['NR','NOT RATED','UNRATED'].includes(r))return'NR';return'';}
 
 // ── SAVE ──
 async function saveMovie(){
-  const movie=document.getElementById('f-movie').value.trim();
+  const title=document.getElementById('f-movie');
+  if(!title){toast('❌ Form not ready','err');return;}
+  const movie=title.value.trim();
   if(!movie){toast('❌ Movie title required','err');return;}
-  const dateStr=document.getElementById('f-date').value.trim()||null;
+  const gv=id=>{const el=document.getElementById(id);return el?el.value:null;};
+  const dateStr=gv('f-date')||null;
   const payload={
-    movie,year:document.getElementById('f-year').value.trim()||null,date:dateStr,watch_date:dateStr?parseDISO(dateStr):null,
-    mpaa:document.getElementById('f-mpaa').value||null,rt:document.getElementById('f-rt').value.trim()||null,
-    rating:parseFloat(document.getElementById('f-rating').value)||null,
-    location:document.getElementById('f-location').value.trim()||null,type:document.getElementById('f-type').value||null,
-    selected:document.getElementById('f-selected').value.trim()||null,event:document.getElementById('f-event').value.trim()||null,
-    notes:document.getElementById('f-notes').value.trim()||null,poster_url:document.getElementById('f-poster').value.trim()||null,
-    tmdb_id:parseInt(document.getElementById('f-tmdb').value)||null,imdb_id:document.getElementById('f-imdb').value.trim()||null,
-    director:document.getElementById('f-director').value.trim()||null,genre:document.getElementById('f-genre').value.trim()||null,
-    plot:document.getElementById('f-plot').value.trim()||null,
+    movie,year:gv('f-year')||null,date:dateStr,watch_date:dateStr?parseDISO(dateStr):null,
+    mpaa:gv('f-mpaa')||null,rt:gv('f-rt')||null,
+    rating:parseFloat(gv('f-rating'))||null,
+    location:gv('f-location')||null,type:gv('f-type')||null,
+    selected:gv('f-selected')||null,event:gv('f-event')||null,
+    notes:gv('f-notes')||null,poster_url:gv('f-poster')||null,
+    tmdb_id:parseInt(gv('f-tmdb'))||null,imdb_id:gv('f-imdb')||null,
+    director:gv('f-director')||null,genre:gv('f-genre')||null,plot:gv('f-plot')||null,
   };
   try{
     if(editingId){await sbFetch('movies?id=eq.'+editingId,{method:'PATCH',body:JSON.stringify(payload)});toast('✅ Film updated!');}
     else{payload.num=(movies.reduce((a,m)=>Math.max(a,m.num||0),0))+1;await sbFetch('movies',{method:'POST',body:JSON.stringify(payload),prefer:'return=minimal'});toast('🎬 Film added!');}
-    closeModal();await loadMovies();
+    closeFsOverlay();await loadMovies();
   }catch(e){toast('❌ Save failed: '+e.message,'err');console.error(e);}
 }
 
 // ── HELPERS ──
-function esc(s){return(s||'').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
-function rtH(rt){
-  if(!rt||rt==='---')return'<span class="rt-none">—</span>';
-  const n=parseInt(rt);if(isNaN(n))return`<span class="rt-none">${rt}</span>`;
-  return`<span class="rt-pill ${n>=75?'rt-hi':n>=50?'rt-mid':'rt-lo'}">${rt}</span>`;
-}
-function mpaaH(m){
-  if(!m||m==='---')return'';
-  return`<span class="mpaa-badge ${m==='R'?'mpaa-R':m==='PG-13'?'mpaa-PG13':m==='PG'?'mpaa-PG':'mpaa-NR'}">${m}</span>`;
-}
-function starsH(r){
-  const v=parseFloat(r);if(isNaN(v)||v===0)return'<span style="color:var(--muted);font-size:11px">—</span>';
-  const f=Math.floor(v),h=v%1>=0.5;
-  return`<span class="stars" title="${r}/5">${'★'.repeat(f)+(h?'½':'')+'☆'.repeat(5-f-(h?1:0))}</span>`;
-}
-function parseDV(d){
-  if(!d)return 0;
-  if(/^\d{4}-\d{2}-\d{2}/.test(d)){const dt=new Date(d+'T12:00:00');return dt.getTime();}
-  if(/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(d)){const[mo,dy,yr]=d.split('/');return new Date(+yr,+mo-1,+dy).getTime();}
-  if(/^\d{4}$/.test(d))return new Date(+d,0,1).getTime();
-  return 0;
-}
-function parseDISO(d){
-  if(!d)return null;
-  if(/^\d{4}-\d{2}-\d{2}$/.test(d))return d;
-  if(/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(d)){const[mo,dy,yr]=d.split('/');return`${yr}-${mo.padStart(2,'0')}-${dy.padStart(2,'0')}`;}
-  if(/^\d{4}$/.test(d))return`${d}-01-01`;
-  return null;
-}
-function toast(msg,type=''){
-  const t=document.createElement('div');t.className='toast'+(type?' '+type:'');t.textContent=msg;
-  document.body.appendChild(t);setTimeout(()=>t.remove(),3200);
-}
+function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function rtH(rt){if(!rt||rt==='---')return'<span class="rt-none">—</span>';const n=parseInt(rt);if(isNaN(n))return`<span class="rt-none">${rt}</span>`;return`<span class="rt-pill ${n>=75?'rt-hi':n>=50?'rt-mid':'rt-lo'}">${rt}</span>`;}
+function mpaaH(m){if(!m||m==='---')return'';return`<span class="mpaa-badge ${m==='R'?'mpaa-R':m==='PG-13'?'mpaa-PG13':m==='PG'?'mpaa-PG':'mpaa-NR'}">${m}</span>`;}
+function starsH(r){const v=parseFloat(r);if(isNaN(v)||v===0)return'<span style="color:var(--muted);font-size:11px">—</span>';const f=Math.floor(v),h=v%1>=0.5;return`<span class="stars" title="${r}/5">${'★'.repeat(f)+(h?'½':'')+'☆'.repeat(5-f-(h?1:0))}</span>`;}
+function parseDV(d){if(!d)return 0;if(/^\d{4}-\d{2}-\d{2}/.test(d))return new Date(d+'T12:00:00').getTime();if(/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(d)){const[mo,dy,yr]=d.split('/');return new Date(+yr,+mo-1,+dy).getTime();}if(/^\d{4}$/.test(d))return new Date(+d,0,1).getTime();return 0;}
+function parseDISO(d){if(!d)return null;if(/^\d{4}-\d{2}-\d{2}$/.test(d))return d;if(/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(d)){const[mo,dy,yr]=d.split('/');return`${yr}-${mo.padStart(2,'0')}-${dy.padStart(2,'0')}`;}if(/^\d{4}$/.test(d))return`${d}-01-01`;return null;}
+function toast(msg,type=''){const t=document.createElement('div');t.className='toast'+(type?' '+type:'');t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),3200);}
+
 document.addEventListener('keydown',e=>{
   if(e.key==='Escape'){
-    if(document.getElementById('del-modal').style.display!=='none')closeDelModal();
-    else if(document.getElementById('edit-modal').style.display!=='none')closeModal();
-    else if(document.getElementById('pin-modal').style.display!=='none')closePinModal();
+    if(document.getElementById('lightbox').style.display!=='none'){closeLightbox();return;}
+    if(document.getElementById('del-modal').style.display!=='none'){closeDelModal();return;}
+    if(document.getElementById('pin-modal').style.display!=='none'){closePinModal();return;}
+    if(document.getElementById('fs-overlay').style.display!=='none'){closeFsOverlay();return;}
+    closeSidebar();
   }
 });
+
 loadMovies();
 </script>
 </body>
