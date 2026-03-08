@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HFMDB v1.3</title>
+<title>HFMDB v1.4</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;500;600;700&family=Barlow:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
 <style>
@@ -20,19 +20,12 @@
 html,body{height:100%;overflow:hidden}
 body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;font-size:14px;display:flex}
 
-/* SIDEBAR */
-#sidebar{
-  width:var(--sw);background:var(--surface);border-right:1px solid var(--border);
-  display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto;overflow-x:hidden;
-  transition:width .22s ease;position:relative;z-index:10;
-}
+/* ── SIDEBAR ── */
+#sidebar{width:var(--sw);background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto;overflow-x:hidden;transition:width .22s ease;position:relative;z-index:10}
 #sidebar.collapsed{width:52px}
 #sidebar.collapsed .sb-hide{display:none!important}
 #sidebar.collapsed .nav-item{justify-content:center;padding:12px 0}
-.sb-top{display:flex;align-items:center;justify-content:space-between;padding:14px 12px 12px;border-bottom:1px solid var(--border);flex-shrink:0}
-.sb-brand{display:flex;align-items:center;gap:8px}
-.sb-brand .skull{font-size:20px}
-.sb-brand h1{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:2px;color:var(--orange);line-height:1}
+.sb-top{display:flex;align-items:center;justify-content:flex-end;padding:10px 10px;border-bottom:1px solid var(--border);flex-shrink:0}
 .sb-toggle{background:transparent;border:1px solid var(--border);color:var(--dim);width:28px;height:28px;border-radius:4px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s}
 .sb-toggle:hover{border-color:var(--orange);color:var(--orange)}
 .sb-stats{padding:10px 12px;border-bottom:1px solid var(--border);display:grid;grid-template-columns:1fr 1fr;gap:6px}
@@ -57,46 +50,68 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;font
 .admin-btn:hover{border-color:var(--orange);color:var(--orange)}
 .admin-btn.on{background:var(--og);border-color:var(--orange);color:var(--orange)}
 
-/* MAIN */
+/* ── TOPBAR ── */
 #main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
-#topbar{padding:10px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--surface);flex-shrink:0;gap:10px}
-.tb-left{display:flex;align-items:center;gap:12px}
-.tb-logo{display:flex;align-items:center;gap:8px}
-.tb-skull{font-size:26px;line-height:1}
-.tb-title{font-family:'Bebas Neue',sans-serif;font-size:34px;letter-spacing:3px;color:var(--orange);line-height:1}
-.tb-ver{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:2px;color:var(--muted);align-self:flex-end;margin-bottom:3px}
-.admin-badge{background:var(--og);border:1px solid var(--orange);color:var(--orange);font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:2px;padding:3px 8px;border-radius:3px;text-transform:uppercase;white-space:nowrap}
+#topbar{padding:8px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--surface);flex-shrink:0;gap:10px}
+.tb-left{display:flex;align-items:center;gap:10px}
+.tb-logo{display:flex;align-items:center;gap:6px}
+.tb-skull{font-size:18px;line-height:1}
+.tb-title{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;color:var(--orange);line-height:1}
+.tb-ver{font-family:'Barlow Condensed',sans-serif;font-size:9px;letter-spacing:2px;color:var(--muted);align-self:flex-end;margin-bottom:1px}
+.admin-badge{background:var(--og);border:1px solid var(--orange);color:var(--orange);font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:2px;padding:2px 7px;border-radius:3px;text-transform:uppercase;white-space:nowrap}
 .tb-right{display:flex;gap:8px;align-items:center;flex-shrink:0}
 .search-wrap{position:relative}
 .search-wrap::before{content:'🔍';position:absolute;left:8px;top:50%;transform:translateY(-50%);font-size:11px;pointer-events:none}
-.search-box{background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:7px 10px 7px 28px;border-radius:4px;font-family:'Barlow',sans-serif;font-size:13px;outline:none;width:185px}
+.search-box{background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:6px 10px 6px 27px;border-radius:4px;font-family:'Barlow',sans-serif;font-size:13px;outline:none;width:180px}
 .search-box:focus{border-color:var(--orange)}
-.pgsize-sel{background:var(--surface2);border:1px solid var(--border);color:var(--dim);padding:6px 7px;border-radius:4px;font-family:'Barlow Condensed',sans-serif;font-size:12px;outline:none;cursor:pointer}
-.pgsize-sel option{background:#1a1a1a}
-.add-btn{width:32px;height:32px;background:var(--orange);border:none;color:#fff;font-size:22px;font-weight:300;cursor:pointer;border-radius:6px;display:flex;align-items:center;justify-content:center;transition:background .15s;flex-shrink:0;line-height:1;padding-bottom:1px}
+.add-btn{width:30px;height:30px;background:var(--orange);border:none;color:#fff;font-size:22px;font-weight:300;cursor:pointer;border-radius:6px;display:flex;align-items:center;justify-content:center;transition:background .15s;flex-shrink:0;line-height:1;padding-bottom:1px}
 .add-btn:hover{background:var(--orange2)}
 
-/* CONTENT */
+/* ── CONTENT ── */
 #content{flex:1;overflow-y:auto;overflow-x:auto;position:relative}
 .loading-overlay{position:absolute;inset:0;background:rgba(11,11,11,.85);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;z-index:50}
 .l-skull{font-size:48px;animation:pulse 1.2s ease-in-out infinite}
 @keyframes pulse{0%,100%{opacity:.3;transform:scale(.95)}50%{opacity:1;transform:scale(1.05)}}
 .l-txt{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:4px;color:var(--orange)}
 
-/* SHEET */
-#sheet-view{min-width:860px}
+/* ── NOW VIEW ── */
+#now-view{padding:18px 22px;max-width:860px}
+.now-section{margin-bottom:22px}
+.now-section-title{font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:3px;color:var(--muted);text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.now-section-title span{height:1px;flex:1;background:var(--border)}
+.now-week{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:14px 16px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:all .18s;position:relative}
+.now-week:hover{border-color:var(--border2);background:var(--surface2)}
+.now-week.this-week{border-color:var(--orange);background:rgba(232,98,26,.05)}
+.now-week.this-week::before{content:'THIS WEEK';position:absolute;top:-9px;left:14px;background:var(--orange);color:#fff;font-family:'Bebas Neue',sans-serif;font-size:10px;letter-spacing:2px;padding:1px 8px;border-radius:2px}
+.now-week.future{border-color:var(--border);opacity:.7}
+.now-week.future:hover{opacity:1}
+.nw-date{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--dim);letter-spacing:1px;min-width:90px;line-height:1}
+.nw-date.this-week{color:var(--orange)}
+.nw-dotw{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-top:2px}
+.nw-poster{width:36px;height:54px;object-fit:cover;border-radius:3px;flex-shrink:0}
+.nw-no-poster{width:36px;height:54px;background:var(--surface3);border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:14px;opacity:.4;flex-shrink:0}
+.nw-info{flex:1;min-width:0}
+.nw-movie{font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:700;line-height:1.2;color:var(--text)}
+.nw-movie.tbd{color:var(--muted);font-style:italic;font-weight:400}
+.nw-meta{display:flex;gap:8px;align-items:center;margin-top:5px;flex-wrap:wrap}
+.nw-loc{font-size:11px;color:var(--dim);font-family:'Barlow Condensed',sans-serif}
+.nw-num{font-family:'Bebas Neue',sans-serif;font-size:12px;color:var(--muted);letter-spacing:1px;min-width:32px;text-align:right;flex-shrink:0}
+
+/* ── SHEET VIEW ── */
+#sheet-view{min-width:900px}
 .sheet-table{width:100%;border-collapse:collapse;font-family:'Barlow Condensed',sans-serif;font-size:13px}
-.sheet-table thead th{background:var(--surface2);padding:9px 11px;text-align:left;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);border-bottom:2px solid var(--orange);white-space:nowrap;position:sticky;top:0;z-index:2;cursor:pointer;user-select:none;transition:color .15s}
+.sheet-table thead th{background:var(--surface2);padding:9px 10px;text-align:left;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);border-bottom:2px solid var(--orange);white-space:nowrap;position:sticky;top:0;z-index:2;cursor:pointer;user-select:none;transition:color .15s}
 .sheet-table thead th:hover,.sheet-table thead th.sorted{color:var(--orange)}
 .sort-arr{font-size:10px;margin-left:2px}
 .sheet-table tbody tr{border-bottom:1px solid var(--border);transition:background .1s;cursor:pointer}
 .sheet-table tbody tr:hover{background:var(--og)}
-.sheet-table td{padding:7px 11px;white-space:nowrap;vertical-align:middle}
-.td-num{color:var(--muted);font-size:11px;width:36px}
+.sheet-table td{padding:7px 10px;white-space:nowrap;vertical-align:middle}
+.td-num{color:var(--muted);font-size:11px;width:34px}
 .td-poster img{width:26px;height:38px;object-fit:cover;border-radius:2px;display:block}
 .td-poster .np{width:26px;height:38px;background:var(--surface3);border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:11px}
 .td-movie{font-weight:700;font-size:14px;max-width:200px;overflow:hidden;text-overflow:ellipsis}
 .td-date,.td-year{color:var(--dim);font-size:12px}
+.td-dotw{color:var(--dim);font-size:12px;font-family:'Barlow Condensed',sans-serif;letter-spacing:.5px}
 .rt-pill{display:inline-block;padding:2px 7px;border-radius:10px;font-size:11px;font-weight:700;font-family:'Barlow Condensed',sans-serif}
 .rt-hi{background:var(--green-bg);color:var(--green)}
 .rt-mid{background:var(--yellow-bg);color:var(--yellow)}
@@ -108,16 +123,16 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;font
 .loc-tag{display:inline-block;background:var(--surface3);padding:2px 7px;border-radius:3px;font-size:11px;color:var(--dim)}
 .type-badge{font-size:10px;padding:2px 6px;border-radius:2px;background:var(--og);color:var(--orange);white-space:nowrap}
 .event-tag{font-size:10px;color:var(--orange);font-style:italic}
-.notes-cell{max-width:150px;overflow:hidden;text-overflow:ellipsis;color:var(--dim);font-size:11px}
+.notes-cell{max-width:140px;overflow:hidden;text-overflow:ellipsis;color:var(--dim);font-size:11px}
 .edit-btn{background:transparent;border:1px solid var(--border);color:var(--dim);padding:3px 8px;border-radius:3px;cursor:pointer;font-size:11px;font-family:'Barlow Condensed',sans-serif;transition:all .15s}
 .edit-btn:hover{border-color:var(--orange);color:var(--orange)}
 
-/* CARDS */
+/* ── CARD VIEW ── */
 #card-view{padding:16px 18px;display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px}
 .movie-card{background:var(--surface);border:1px solid var(--border);border-radius:6px;overflow:hidden;transition:all .2s;cursor:pointer;position:relative}
 .movie-card:hover{border-color:var(--border2);transform:translateY(-2px);box-shadow:0 10px 28px rgba(0,0,0,.5)}
 .card-poster{width:100%;aspect-ratio:2/3;object-fit:cover;display:block;background:var(--surface2)}
-.card-no-poster{width:100%;aspect-ratio:2/3;background:linear-gradient(160deg,var(--surface2),var(--surface3));display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:var(--muted)}
+.card-no-poster{width:100%;aspect-ratio:2/3;background:linear-gradient(160deg,var(--surface2),var(--surface3));display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px}
 .cnp-skull{font-size:32px;opacity:.35}
 .cnp-title{font-family:'Barlow Condensed',sans-serif;font-size:12px;text-align:center;padding:0 10px;color:var(--dim);line-height:1.3}
 .card-body{padding:9px 11px 11px}
@@ -129,7 +144,6 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;font
 .card-date{font-size:10px;color:var(--muted)}
 .card-note{font-size:10px;color:var(--dim);font-style:italic;margin-top:5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;border-top:1px solid var(--border);padding-top:5px}
 .card-type-badge{position:absolute;top:7px;right:7px;background:rgba(11,11,11,.85);border:1px solid var(--orange);color:var(--orange);font-family:'Barlow Condensed',sans-serif;font-size:9px;letter-spacing:1px;padding:2px 5px;border-radius:2px}
-/* 3-dot */
 .card-menu-wrap{position:absolute;top:7px;left:7px}
 .card-dotmenu{background:rgba(11,11,11,.8);border:1px solid var(--border2);color:var(--dim);width:26px;height:26px;border-radius:4px;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;transition:all .15s;line-height:.8}
 .card-dotmenu:hover{border-color:var(--orange);color:var(--orange)}
@@ -140,7 +154,7 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;font
 .dot-dd-item.danger{color:#e74c3c}
 .dot-dd-item.danger:hover{background:rgba(192,57,43,.15)}
 
-/* LIST VIEW */
+/* ── LIST VIEW ── */
 #list-view{display:none}
 .list-filter-bar{display:flex;gap:6px;padding:9px 14px;background:var(--surface);border-bottom:1px solid var(--border);flex-wrap:wrap;position:sticky;top:0;z-index:3}
 .lf-sel{background:var(--surface2);border:1px solid var(--border);color:var(--dim);padding:5px 8px;border-radius:4px;font-family:'Barlow Condensed',sans-serif;font-size:12px;outline:none;cursor:pointer;appearance:none;-webkit-appearance:none}
@@ -148,58 +162,60 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;font
 .lf-sel option{background:#1a1a1a}
 .list-row{display:flex;align-items:center;border-bottom:1px solid var(--border);padding:6px 14px;cursor:pointer;transition:background .1s;font-family:'Barlow Condensed',sans-serif}
 .list-row:hover{background:var(--og)}
-.lr-num{width:38px;color:var(--muted);font-size:11px;flex-shrink:0}
-.lr-movie{flex:1;font-size:14px;font-weight:600;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-right:8px}
-.lr-date{width:88px;color:var(--dim);font-size:12px;flex-shrink:0}
-.lr-year{width:44px;color:var(--dim);font-size:12px;flex-shrink:0}
+.lr-num{width:36px;color:var(--muted);font-size:11px;flex-shrink:0}
+.lr-movie{flex:1;font-size:14px;font-weight:600;min-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding-right:10px}
+.lr-date{width:90px;color:var(--dim);font-size:12px;flex-shrink:0}
+.lr-dotw{width:38px;color:var(--dim);font-size:12px;flex-shrink:0}
+.lr-year{width:42px;color:var(--dim);font-size:12px;flex-shrink:0}
 .lr-mpaa{width:44px;flex-shrink:0}
-.lr-rt{width:54px;flex-shrink:0}
-.lr-rating{width:82px;flex-shrink:0}
-.lr-loc{width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;color:var(--dim);flex-shrink:0}
+.lr-rt{width:52px;flex-shrink:0}
+.lr-rating{width:80px;flex-shrink:0}
+.lr-loc{width:108px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;color:var(--dim);flex-shrink:0}
 .lr-type{width:90px;flex-shrink:0}
-.lr-act{width:32px;flex-shrink:0;display:flex;justify-content:flex-end}
+.lr-act{width:30px;flex-shrink:0;display:flex;justify-content:flex-end}
 
-/* STATS */
-#stats-view{padding:20px 22px;max-width:1100px;display:none}
-.stats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:14px;margin-bottom:20px}
-.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:15px;border-top:2px solid var(--orange)}
-.stat-card h3{font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:2px;color:var(--orange);margin-bottom:11px}
+/* ── STATS VIEW ── */
+#stats-view{padding:18px 22px;max-width:1100px;display:none}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-bottom:20px}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:14px;border-top:2px solid var(--orange)}
+.stat-card h3{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;color:var(--orange);margin-bottom:10px}
 .sri{display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid var(--border)}
 .sri:last-child{border-bottom:none}
-.sri-lbl{font-family:'Barlow Condensed',sans-serif;font-size:13px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:190px}
+.sri-lbl{font-family:'Barlow Condensed',sans-serif;font-size:13px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:185px}
 .sri-val{font-family:'Bebas Neue',sans-serif;font-size:15px;color:var(--orange);letter-spacing:1px;flex-shrink:0;margin-left:6px}
 .sbar{height:4px;background:var(--surface3);border-radius:2px;margin-top:3px;overflow:hidden}
 .sbar-fill{height:100%;background:var(--orange);border-radius:2px}
-.stat-big{font-family:'Bebas Neue',sans-serif;font-size:44px;color:var(--orange);line-height:1}
+.stat-big{font-family:'Bebas Neue',sans-serif;font-size:40px;color:var(--orange);line-height:1}
 .stat-lbl2{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase}
 
-/* HOF */
-#hof-view{padding:20px 22px;display:none}
-.hof-hdr{margin-bottom:16px}
-.hof-hdr h2{font-family:'Bebas Neue',sans-serif;font-size:30px;letter-spacing:3px;color:var(--orange)}
+/* ── HOF VIEW ── */
+#hof-view{padding:18px 22px;display:none}
+.hof-hdr{margin-bottom:14px}
+.hof-hdr h2{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:3px;color:var(--orange)}
 .hof-hdr p{font-family:'Barlow Condensed',sans-serif;font-size:12px;color:var(--dim);margin-top:3px;letter-spacing:.5px}
 .hof-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
-.hof-card{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:13px;display:flex;gap:11px;align-items:flex-start;transition:all .2s;cursor:pointer}
+.hof-card{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:12px;display:flex;gap:10px;align-items:flex-start;transition:all .2s;cursor:pointer}
 .hof-card:hover{border-color:var(--border2);background:var(--surface2)}
-.hof-rank{font-family:'Bebas Neue',sans-serif;font-size:26px;color:var(--muted);letter-spacing:1px;line-height:1;min-width:28px;text-align:center;flex-shrink:0}
+.hof-rank{font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--muted);letter-spacing:1px;line-height:1;min-width:26px;text-align:center;flex-shrink:0}
 .hof-rank.top3{color:var(--orange)}
 .hof-info{flex:1;min-width:0}
 .hof-title{font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;line-height:1.2;margin-bottom:3px}
 .hof-count{font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:1px;color:var(--orange);background:var(--og);padding:2px 7px;border-radius:3px;display:inline-block;margin-bottom:3px}
 .hof-years{font-size:11px;color:var(--dim);font-family:'Barlow Condensed',sans-serif}
 
-/* PAGINATION */
-.pagination{display:flex;align-items:center;justify-content:center;gap:5px;padding:10px 16px;border-top:1px solid var(--border);background:var(--surface);flex-shrink:0}
+/* ── PAGINATION / BOTTOM BAR ── */
+.pagination{display:flex;align-items:center;justify-content:center;gap:5px;padding:8px 16px;border-top:1px solid var(--border);background:var(--surface);flex-shrink:0;flex-wrap:wrap}
 .pg-btn{padding:4px 10px;background:var(--surface2);border:1px solid var(--border);color:var(--dim);cursor:pointer;border-radius:3px;font-family:'Barlow Condensed',sans-serif;font-size:13px;transition:all .15s}
 .pg-btn:hover,.pg-btn.on{background:var(--orange);border-color:var(--orange);color:#fff}
 .pg-btn:disabled{opacity:.3;cursor:default}
 .pg-info{font-family:'Barlow Condensed',sans-serif;font-size:12px;color:var(--muted)}
+.pgsize-sel{background:var(--surface2);border:1px solid var(--border);color:var(--dim);padding:4px 7px;border-radius:3px;font-family:'Barlow Condensed',sans-serif;font-size:12px;outline:none;cursor:pointer;margin-left:8px}
+.pgsize-sel option{background:#1a1a1a}
 
-/* MODALS */
+/* ── MODALS ── */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);display:flex;align-items:center;justify-content:center;z-index:200;backdrop-filter:blur(5px)}
 .modal{background:var(--surface);border:1px solid var(--border);border-top:3px solid var(--orange);border-radius:8px;padding:22px 24px;width:520px;max-width:96vw;max-height:92vh;overflow-y:auto}
 .modal h2{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:2px;color:var(--orange);margin-bottom:16px}
-/* detail */
 .det-layout{display:flex;gap:16px;margin-bottom:14px}
 .d-poster img{width:90px;border-radius:4px}
 .d-noi{width:90px;height:134px;background:var(--surface3);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:26px;opacity:.4}
@@ -213,7 +229,6 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;font
 .dm{display:flex;flex-direction:column;gap:2px}
 .dm-l{font-family:'Barlow Condensed',sans-serif;font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase}
 .dm-v{font-size:13px}
-/* edit form */
 .fg-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
 .fg{display:flex;flex-direction:column;gap:4px}
 .fg.full{grid-column:1/-1}
@@ -234,19 +249,16 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;font
 .btn-c:hover{border-color:var(--dim)}
 .btn-s{padding:7px 18px;background:var(--orange);border:none;color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:600;letter-spacing:1px;cursor:pointer;border-radius:4px;transition:background .15s}
 .btn-s:hover{background:var(--orange2)}
-/* delete confirm */
 .del-modal{width:340px;text-align:center}
 .del-ico{font-size:38px;margin-bottom:8px}
 .del-msg{font-size:13px;color:var(--dim);line-height:1.5;margin-bottom:3px}
 .del-name{font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:700;color:var(--text);margin-bottom:14px}
 .btn-del{padding:7px 14px;background:rgba(192,57,43,.15);border:1px solid #c0392b;color:#e74c3c;font-family:'Barlow Condensed',sans-serif;font-size:14px;cursor:pointer;border-radius:4px;letter-spacing:1px;transition:all .15s}
 .btn-del:hover{background:rgba(192,57,43,.3)}
-/* PIN */
 .pin-sub{color:var(--dim);font-size:13px;margin-bottom:13px;text-align:center}
 .pin-input{width:145px;background:var(--surface2);border:1px solid var(--border);color:var(--orange);padding:10px;border-radius:4px;font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:13px;text-align:center;outline:none;-webkit-text-security:disc;display:block;margin:0 auto}
 .pin-input:focus{border-color:var(--orange)}
 .pin-err{color:#e74c3c;font-size:12px;margin-top:7px;min-height:16px;text-align:center}
-/* toast */
 .toast{position:fixed;bottom:22px;right:22px;background:var(--surface2);border:1px solid var(--border2);border-left:4px solid var(--orange);color:var(--text);padding:10px 14px;border-radius:4px;font-family:'Barlow Condensed',sans-serif;font-size:15px;z-index:999;animation:tin .2s ease;max-width:260px}
 .toast.err{border-left-color:#e74c3c}
 @keyframes tin{from{transform:translateX(12px);opacity:0}to{transform:none;opacity:1}}
@@ -261,9 +273,9 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;font
 </head>
 <body>
 
-<div id="sidebar">
+<!-- SIDEBAR (starts collapsed) -->
+<div id="sidebar" class="collapsed">
   <div class="sb-top">
-    <div class="sb-brand sb-hide"><span class="skull">💀</span><h1>HFMDB</h1></div>
     <button class="sb-toggle" onclick="toggleSidebar()">☰</button>
   </div>
   <div class="sb-stats sb-hide">
@@ -273,7 +285,8 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;font
     <div class="sb-stat"><span class="ssv" id="s-locs">—</span><span class="ssl">Venues</span></div>
   </div>
   <div class="sb-sec sb-hide">Views</div>
-  <div class="nav-item active" onclick="setView('sheet')" id="nv-sheet"><span class="nav-icon">📋</span><span class="sb-hide">Sheet</span></div>
+  <div class="nav-item active" onclick="setView('now')"   id="nv-now"><span class="nav-icon">📅</span><span class="sb-hide">Now</span></div>
+  <div class="nav-item" onclick="setView('sheet')" id="nv-sheet"><span class="nav-icon">📋</span><span class="sb-hide">Sheet</span></div>
   <div class="nav-item" onclick="setView('card')"  id="nv-card"><span class="nav-icon">🎬</span><span class="sb-hide">Cards</span></div>
   <div class="nav-item" onclick="setView('list')"  id="nv-list"><span class="nav-icon">📄</span><span class="sb-hide">List</span></div>
   <div class="nav-item" onclick="setView('stats')" id="nv-stats"><span class="nav-icon">📊</span><span class="sb-hide">Stats</span></div>
@@ -304,21 +317,19 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;font
   </div>
 </div>
 
+<!-- MAIN -->
 <div id="main">
   <div id="topbar">
     <div class="tb-left">
-      <div class="tb-logo"><span class="tb-skull">💀</span><span class="tb-title">HFMDB</span><span class="tb-ver">v1.3</span></div>
+      <div class="tb-logo">
+        <span class="tb-skull">💀</span>
+        <span class="tb-title">HFMDB</span>
+        <span class="tb-ver">v1.4</span>
+      </div>
       <span class="admin-badge" id="admin-badge" style="display:none">⚡ ADMIN</span>
     </div>
     <div class="tb-right">
       <div class="search-wrap"><input type="text" class="search-box" id="search-box" placeholder="Search films…" oninput="applyFilters()"></div>
-      <select class="pgsize-sel" id="pgsize-sel" onchange="changePgSize()" title="Rows per page">
-        <option value="25">25</option><option value="50">50</option><option value="75">75</option>
-        <option value="100" selected>100</option><option value="150">150</option><option value="200">200</option>
-        <option value="250">250</option><option value="300">300</option><option value="350">350</option>
-        <option value="400">400</option><option value="450">450</option><option value="500">500</option>
-        <option value="600">600</option><option value="700">700</option>
-      </select>
       <button class="add-btn" id="add-btn" onclick="openAdd()" style="display:none" title="Add Film">+</button>
     </div>
   </div>
@@ -326,12 +337,17 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;font
   <div id="content">
     <div class="loading-overlay" id="loader"><div class="l-skull">💀</div><div class="l-txt">Loading HFMDB…</div></div>
 
-    <div id="sheet-view">
+    <!-- NOW -->
+    <div id="now-view" style="display:none"></div>
+
+    <!-- SHEET -->
+    <div id="sheet-view" style="display:none">
       <table class="sheet-table">
         <thead><tr>
           <th onclick="sortBy('num')">#<span class="sort-arr" id="sa-num"></span></th>
           <th style="cursor:default">🖼</th>
           <th onclick="sortBy('date')">Date<span class="sort-arr" id="sa-date"></span></th>
+          <th>DOTW</th>
           <th onclick="sortBy('movie')">Movie<span class="sort-arr" id="sa-movie"></span></th>
           <th onclick="sortBy('year')">Year<span class="sort-arr" id="sa-year"></span></th>
           <th>MPAA</th>
@@ -347,24 +363,54 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;font
       </table>
     </div>
 
+    <!-- CARDS -->
     <div id="card-view" style="display:none"></div>
 
+    <!-- LIST -->
     <div id="list-view" style="display:none">
       <div class="list-filter-bar">
         <select class="lf-sel" id="lf-loc"    onchange="applyListFilters()"><option value="">📍 All Locations</option></select>
-        <select class="lf-sel" id="lf-mpaa"   onchange="applyListFilters()"><option value="">🎬 All MPAA</option><option>R</option><option>PG-13</option><option>PG</option><option>NR</option></select>
-        <select class="lf-sel" id="lf-type"   onchange="applyListFilters()"><option value="">🎭 All Types</option><option>Double Feature</option><option>Field Trip</option></select>
-        <select class="lf-sel" id="lf-yr"     onchange="applyListFilters()"><option value="">📅 All Years</option></select>
-        <select class="lf-sel" id="lf-rt"     onchange="applyListFilters()"><option value="">🍅 All RT</option><option value="80">80%+</option><option value="60">60%+</option><option value="40">40%+</option><option value="0">Under 40%</option></select>
-        <select class="lf-sel" id="lf-rating" onchange="applyListFilters()"><option value="">⭐ All Ratings</option><option value="5">5 stars</option><option value="4">4+ stars</option><option value="3">3+ stars</option><option value="2">2+ stars</option></select>
+        <select class="lf-sel" id="lf-mpaa"   onchange="applyListFilters()"><option value="">🎬 MPAA</option><option>R</option><option>PG-13</option><option>PG</option><option>NR</option></select>
+        <select class="lf-sel" id="lf-type"   onchange="applyListFilters()"><option value="">🎭 Type</option><option>Double Feature</option><option>Field Trip</option></select>
+        <select class="lf-sel" id="lf-yr"     onchange="applyListFilters()"><option value="">📅 Year</option></select>
+        <select class="lf-sel" id="lf-rt"     onchange="applyListFilters()">
+          <option value="">🍅 RT Score</option>
+          <option value="90-100">90–100%</option><option value="80-89">80–89%</option>
+          <option value="70-79">70–79%</option><option value="60-69">60–69%</option>
+          <option value="50-59">50–59%</option><option value="40-49">40–49%</option>
+          <option value="30-39">30–39%</option><option value="20-29">20–29%</option>
+          <option value="10-19">10–19%</option><option value="0-9">0–9%</option>
+        </select>
+        <select class="lf-sel" id="lf-rating" onchange="applyListFilters()">
+          <option value="">⭐ Rating</option>
+          <option value="5">★★★★★ (5)</option>
+          <option value="4.5">★★★★½ (4.5)</option>
+          <option value="4">★★★★ (4)</option>
+          <option value="3.5">★★★½ (3.5)</option>
+          <option value="3">★★★ (3)</option>
+          <option value="2.5">★★½ (2.5)</option>
+          <option value="2">★★ (2)</option>
+          <option value="1.5">★½ (1.5)</option>
+          <option value="1">★ (1)</option>
+          <option value="0.5">½ (0.5)</option>
+        </select>
+        <select class="lf-sel" id="lf-dotw" onchange="applyListFilters()">
+          <option value="">📆 Day</option>
+          <option>Mon</option><option>Tue</option><option>Wed</option>
+          <option>Thu</option><option>Fri</option><option>Sat</option><option>Sun</option>
+        </select>
       </div>
       <div id="list-body"></div>
     </div>
 
+    <!-- STATS -->
     <div id="stats-view" style="display:none"></div>
-    <div id="hof-view"   style="display:none"></div>
+
+    <!-- HOF -->
+    <div id="hof-view" style="display:none"></div>
   </div>
 
+  <!-- BOTTOM BAR -->
   <div class="pagination" id="pagination"></div>
 </div>
 
@@ -464,10 +510,13 @@ const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZ
 const OMDB_KEY='ca71506d';
 const TMDB_TOK='eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJkOWEzZTc3NmEyNGU3ODZhNzdjYTUzZDFiMzRlZDZkNyIsIm5iZiI6MTc3MjkzODEwNi43MTgwMDAyLCJzdWIiOiI2OWFjZTM3YTkyMTA2NmQyYmVkZDI3MzgiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0._tMaXxFhyxKQCUOFcAv9Ublvq1lT2Unj3tm5xl7MG_o';
 const ADMIN_PIN='1031';
-let movies=[],filtered=[],listFiltered=[];
-let isAdmin=false,view='sheet',sortCol='num',sortDir=1,page=1,pgSize=100;
-let editingId=null,deleteId=null,sidebarCollapsed=false;
+const DOTW_NAMES=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 
+let movies=[],filtered=[],listFiltered=[];
+let isAdmin=false,view='now',sortCol='num',sortDir=1,page=1,pgSize=100;
+let editingId=null,deleteId=null,sidebarCollapsed=true;
+
+// ── SUPABASE ──
 async function sbFetch(path,opts={}){
   const r=await fetch(SB_URL+'/rest/v1/'+path,{
     headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':opts.prefer||'return=representation',...opts.headers},...opts
@@ -486,7 +535,7 @@ async function loadMovies(){
       const first=s.options[0];s.innerHTML='';s.appendChild(first);
       locs.forEach(l=>{const o=document.createElement('option');o.value=l;o.textContent=l;s.appendChild(o);});
     });
-    const yrs=[...new Set(movies.map(m=>{const mx=m.date&&m.date.match(/\d{4}/);return mx?mx[0]:null}).filter(Boolean))].sort();
+    const yrs=[...new Set(movies.map(m=>{const x=m.date&&m.date.match(/\d{4}/);return x?x[0]:null}).filter(Boolean))].sort();
     const lfy=document.getElementById('lf-yr');
     yrs.forEach(y=>{const o=document.createElement('option');o.value=y;o.textContent=y;lfy.appendChild(o);});
     document.getElementById('s-total').textContent=movies.length;
@@ -499,6 +548,19 @@ async function loadMovies(){
   }
 }
 
+// ── DATE OF WEEK ──
+function getDOTW(m){
+  const d=m.watch_date||m.date;
+  if(!d)return'';
+  let dt;
+  if(/^\d{4}-\d{2}-\d{2}/.test(d))dt=new Date(d+'T12:00:00');
+  else if(/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(d)){const[mo,dy,yr]=d.split('/');dt=new Date(+yr,+mo-1,+dy,12);}
+  else if(/^\d{4}$/.test(d))return'';
+  else return'';
+  return DOTW_NAMES[dt.getDay()];
+}
+
+// ── FILTERS ──
 function applyFilters(){
   const q=document.getElementById('search-box').value.toLowerCase();
   const loc=document.getElementById('fl-loc').value;
@@ -533,6 +595,7 @@ function applyListFilters(){
   const yr=document.getElementById('lf-yr').value;
   const rt=document.getElementById('lf-rt').value;
   const rat=document.getElementById('lf-rating').value;
+  const dotw=document.getElementById('lf-dotw').value;
   const q=document.getElementById('search-box').value.toLowerCase();
   listFiltered=movies.filter(m=>{
     if(q&&![(m.movie||''),(m.notes||''),(m.location||'')].some(s=>s.toLowerCase().includes(q)))return false;
@@ -540,8 +603,15 @@ function applyListFilters(){
     if(mpaa&&m.mpaa!==mpaa)return false;
     if(type&&m.type!==type)return false;
     if(yr){const mx=m.date&&m.date.match(/\d{4}/);if(!mx||mx[0]!==yr)return false;}
-    if(rt!==''){const v=parseInt(m.rt)||0;if(rt==='0'){if(v>=40)return false;}else if(v<parseInt(rt))return false;}
-    if(rat&&parseFloat(m.rating)<parseFloat(rat))return false;
+    if(rt!==''){
+      // rt is "lo-hi" e.g. "80-89"
+      const [lo,hi]=rt.split('-').map(Number);
+      const v=parseInt(m.rt)||0;
+      if(v<lo||v>hi)return false;
+    }
+    // exact star rating match
+    if(rat!==''&&parseFloat(m.rating)!==parseFloat(rat))return false;
+    if(dotw&&getDOTW(m)!==dotw)return false;
     return true;
   });
   page=1;renderList();renderPagination();
@@ -565,40 +635,151 @@ function sortBy(col){
   applyFilters();
 }
 
+// ── RENDER DISPATCHER ──
 function render(){
-  ['sheet','card','list','stats','hof'].forEach(v=>{
+  ['now','sheet','card','list','stats','hof'].forEach(v=>{
     const el=document.getElementById(v+'-view');if(el)el.style.display='none';
   });
   const el=document.getElementById(view+'-view');
-  if(el)el.style.display=['card','hof'].includes(view)?'grid':view==='stats'?'block':'block';
-  if(view==='card')document.getElementById('card-view').style.display='grid';
+  if(el)el.style.display=view==='card'?'grid':'block';
   const hasPag=['sheet','card','list'].includes(view);
-  document.getElementById('pagination').style.display=hasPag?'flex':'none';
-  if(view==='sheet')renderSheet();
+  document.getElementById('pagination').style.display=(hasPag||['now','stats','hof'].includes(view))?'flex':'none';
+  if(view==='now')renderNow();
+  else if(view==='sheet')renderSheet();
   else if(view==='card')renderCards();
-  else if(view==='list'){listFiltered=[...filtered];renderList();}
+  else if(view==='list'){listFiltered=[...filtered];applyListFilters();return;}
   else if(view==='stats')renderStats();
   else if(view==='hof')renderHOF();
   if(hasPag)renderPagination();
+  else document.getElementById('pagination').innerHTML='';
 }
 
 function getPage(arr){const src=arr||filtered;return src.slice((page-1)*pgSize,page*pgSize);}
 
+// ── NOW VIEW ──
+function getMondayOf(d){
+  const dt=new Date(d);
+  const day=dt.getDay(); // 0=Sun
+  const diff=day===0?-6:1-day; // go back to Monday
+  dt.setDate(dt.getDate()+diff);
+  dt.setHours(0,0,0,0);
+  return dt;
+}
+function fmtDate(dt){
+  return (dt.getMonth()+1)+'/'+dt.getDate()+'/'+dt.getFullYear();
+}
+function fmtDateShort(dt){
+  const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return months[dt.getMonth()]+' '+dt.getDate();
+}
+
+function renderNow(){
+  const nv=document.getElementById('now-view');
+  const today=new Date();
+  today.setHours(0,0,0,0);
+  const thisMonday=getMondayOf(today);
+
+  // Build a map of ISO date string -> movie(s)
+  const dateMap={};
+  movies.forEach(m=>{
+    const dv=m.watch_date||m.date;
+    if(!dv)return;
+    let dt;
+    if(/^\d{4}-\d{2}-\d{2}/.test(dv)){dt=new Date(dv+'T12:00:00');}
+    else if(/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(dv)){const[mo,dy,yr]=dv.split('/');dt=new Date(+yr,+mo-1,+dy,12);}
+    else return;
+    dt.setHours(0,0,0,0);
+    const key=dt.toISOString().slice(0,10);
+    if(!dateMap[key])dateMap[key]=[];
+    dateMap[key].push(m);
+  });
+
+  function weekCard(monday,label){
+    const key=monday.toISOString().slice(0,10);
+    const ms=dateMap[key]||[];
+    const isThisWeek=monday.getTime()===thisMonday.getTime();
+    const isFuture=monday.getTime()>thisMonday.getTime();
+    const displayDate=fmtDateShort(monday);
+    const dotw=DOTW_NAMES[monday.getDay()];
+
+    if(ms.length===0){
+      return `<div class="now-week ${isThisWeek?'this-week':''} ${isFuture?'future':''}" style="cursor:${isFuture?'default':'pointer'}">
+        <div>
+          <div class="nw-date ${isThisWeek?'this-week':''}">${displayDate}</div>
+          <div class="nw-dotw">${dotw}</div>
+        </div>
+        <div class="nw-no-poster">💀</div>
+        <div class="nw-info"><div class="nw-movie tbd">${isFuture?'— TBD —':'— Unknown —'}</div></div>
+        <div class="nw-num"></div>
+      </div>`;
+    }
+
+    return ms.map(m=>`
+      <div class="now-week ${isThisWeek?'this-week':''}" onclick="openDetail(${m.id})">
+        <div>
+          <div class="nw-date ${isThisWeek?'this-week':''}">${displayDate}</div>
+          <div class="nw-dotw">${dotw}</div>
+        </div>
+        ${m.poster_url?`<img class="nw-poster" src="${m.poster_url}" loading="lazy" onerror="this.outerHTML='<div class=nw-no-poster>🎬</div>'">`:`<div class="nw-no-poster">🎬</div>`}
+        <div class="nw-info">
+          <div class="nw-movie">${m.movie}</div>
+          <div class="nw-meta">
+            ${rtH(m.rt)}
+            ${starsH(m.rating)}
+            ${m.location&&m.location!=='---'&&m.location!=='NONE'?`<span class="nw-loc">📍 ${m.location}</span>`:''}
+          </div>
+        </div>
+        <div class="nw-num">#${m.num||''}</div>
+      </div>
+    `).join('');
+  }
+
+  // Previous 3 weeks
+  const prev3=[];
+  for(let i=3;i>=1;i--){
+    const d=new Date(thisMonday);d.setDate(d.getDate()-i*7);
+    prev3.push(d);
+  }
+  // Next 6 weeks
+  const next6=[];
+  for(let i=1;i<=6;i++){
+    const d=new Date(thisMonday);d.setDate(d.getDate()+i*7);
+    next6.push(d);
+  }
+
+  nv.innerHTML=`
+    <div class="now-section">
+      <div class="now-section-title">Previous 3 Weeks <span></span></div>
+      ${prev3.map(d=>weekCard(d,'')).join('')}
+    </div>
+    <div class="now-section">
+      <div class="now-section-title">This Week <span></span></div>
+      ${weekCard(thisMonday,'')}
+    </div>
+    <div class="now-section">
+      <div class="now-section-title">Next Up <span></span></div>
+      ${next6.map(d=>weekCard(d,'')).join('')}
+    </div>
+  `;
+}
+
+// ── SHEET ──
 function renderSheet(){
   const th=document.getElementById('th-actions');if(th)th.style.display=isAdmin?'':'none';
   const rows=getPage();
-  if(!rows.length){document.getElementById('sheet-body').innerHTML='<tr><td colspan="13"><div class="empty"><div class="es">💀</div><p>NO FILMS FOUND</p></div></td></tr>';return;}
+  if(!rows.length){document.getElementById('sheet-body').innerHTML='<tr><td colspan="14"><div class="empty"><div class="es">💀</div><p>NO FILMS FOUND</p></div></td></tr>';return;}
   document.getElementById('sheet-body').innerHTML=rows.map(m=>`
     <tr onclick="openDetail(${m.id})">
       <td class="td-num">${m.num||'—'}</td>
       <td class="td-poster">${m.poster_url?`<img src="${m.poster_url}" loading="lazy" onerror="this.parentNode.innerHTML='<div class=np>🎬</div>'">`:'<div class="np">🎬</div>'}</td>
       <td class="td-date">${m.date||'—'}</td>
+      <td class="td-dotw">${getDOTW(m)||'—'}</td>
       <td class="td-movie" title="${esc(m.movie)}">${m.movie}</td>
       <td class="td-year">${m.year||'—'}</td>
       <td>${mpaaH(m.mpaa)}</td>
       <td>${rtH(m.rt)}</td>
       <td>${starsH(m.rating)}</td>
-      <td>${m.type?`<span class="type-badge">${m.type}`:''}</td>
+      <td>${m.type?`<span class="type-badge">${m.type}</span>`:''}</td>
       <td>${m.location&&m.location!=='---'&&m.location!=='NONE'?`<span class="loc-tag">${m.location}</span>`:'<span style="color:var(--muted)">—</span>'}</td>
       <td>${m.event?`<span class="event-tag">${m.event}</span>`:''}</td>
       <td class="notes-cell" title="${esc(m.notes||'')}">${m.notes||''}</td>
@@ -607,6 +788,7 @@ function renderSheet(){
   `).join('');
 }
 
+// ── CARDS ──
 function renderCards(){
   const cont=document.getElementById('card-view');
   const rows=getPage();
@@ -637,6 +819,7 @@ function renderCards(){
   `).join('');
 }
 
+// ── LIST ──
 function renderList(){
   const rows=getPage(listFiltered);
   const body=document.getElementById('list-body');
@@ -646,6 +829,7 @@ function renderList(){
       <div class="lr-num">${m.num||'—'}</div>
       <div class="lr-movie" title="${esc(m.movie)}">${m.movie}</div>
       <div class="lr-date">${m.date||'—'}</div>
+      <div class="lr-dotw">${getDOTW(m)||'—'}</div>
       <div class="lr-year">${m.year||'—'}</div>
       <div class="lr-mpaa">${mpaaH(m.mpaa)}</div>
       <div class="lr-rt">${rtH(m.rt)}</div>
@@ -657,31 +841,40 @@ function renderList(){
   `).join('');
 }
 
+// ── STATS ──
 function renderStats(){
   const sv=document.getElementById('stats-view');
   const ms=movies;
-  const grp=(arr,xform)=>{
+  const grp=(xform)=>{
     const map={};
-    arr.forEach(item=>{
-      const k=xform(item);
+    ms.forEach(m=>{
+      const k=xform(m);
       if(!k||k==='---'||k==='NONE'||k==='')return;
       map[k]=(map[k]||0)+1;
     });
     return Object.entries(map).sort((a,b)=>b[1]-a[1]);
   };
-  const byLoc=grp(ms,m=>m.location);
-  const byMpaa=grp(ms,m=>m.mpaa);
-  const byRating=grp(ms,m=>m.rating?String(parseFloat(m.rating).toFixed(1)):null);
-  const byWatchYr=grp(ms,m=>{const x=m.date&&m.date.match(/\d{4}/);return x?x[0]:null;});
-  const byRelYr=grp(ms,m=>m.year);
-  const rtBuckets={'90-100':0,'80-89':0,'70-79':0,'60-69':0,'50-59':0,'40-49':0,'30-39':0,'<30':0,'N/A':0};
-  ms.forEach(m=>{
-    const n=parseInt(m.rt);
-    if(isNaN(n)){rtBuckets['N/A']++;return;}
-    if(n>=90)rtBuckets['90-100']++;else if(n>=80)rtBuckets['80-89']++;else if(n>=70)rtBuckets['70-79']++;
-    else if(n>=60)rtBuckets['60-69']++;else if(n>=50)rtBuckets['50-59']++;else if(n>=40)rtBuckets['40-49']++;
-    else if(n>=30)rtBuckets['30-39']++;else rtBuckets['<30']++;
+
+  const byLoc=grp(m=>m.location);
+  const byMpaa=grp(m=>m.mpaa);
+  const byRating=grp(m=>m.rating?String(parseFloat(m.rating).toFixed(1)):null);
+  const byWatchYr=grp(m=>{const x=m.date&&m.date.match(/\d{4}/);return x?x[0]:null;});
+  const byRelYr=grp(m=>m.year);
+  // DOTW stats
+  const byDotw=grp(m=>getDOTW(m));
+  // Sort DOTW in order Mon-Sun
+  const dotwOrder=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  const byDotwSorted=dotwOrder.map(d=>[d,byDotw.find(([k])=>k===d)?.[1]||0]).filter(([,v])=>v>0);
+
+  // RT buckets with ranges
+  const rtRanges=[['90–100',90,100],['80–89',80,89],['70–79',70,79],['60–69',60,69],
+    ['50–59',50,59],['40–49',40,49],['30–39',30,39],['20–29',20,29],['10–19',10,19],['0–9',0,9],['N/A',null,null]];
+  const rtBuckets=rtRanges.map(([lbl,lo,hi])=>{
+    const count=lo===null?ms.filter(m=>!parseInt(m.rt)&&parseInt(m.rt)!==0).length
+      :ms.filter(m=>{const v=parseInt(m.rt);return !isNaN(v)&&v>=lo&&v<=hi;}).length;
+    return[lbl,count];
   });
+
   const titleMap={};
   ms.forEach(m=>{
     if(!m.movie||m.movie==='??'||m.movie==='---')return;
@@ -697,8 +890,8 @@ function renderStats(){
   const withRt=ms.filter(m=>parseInt(m.rt)>0);
   const avgRtVal=withRt.length?(withRt.reduce((a,m)=>a+parseInt(m.rt),0)/withRt.length).toFixed(1):'—';
 
-  function blk(title,rows,max){
-    const mx=max||Math.max(...rows.map(r=>r[1]),1);
+  function blk(title,rows,maxOverride){
+    const mx=maxOverride||Math.max(...rows.map(r=>r[1]),1);
     return `<div class="stat-card"><h3>${title}</h3>${rows.slice(0,15).map(([k,v])=>`
       <div class="sri"><span class="sri-lbl">${k}</span><span class="sri-val">${v}</span></div>
       <div class="sbar"><div class="sbar-fill" style="width:${Math.round(v/mx*100)}%"></div></div>
@@ -707,12 +900,12 @@ function renderStats(){
 
   sv.innerHTML=`
     <div style="margin-bottom:16px">
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:3px;color:var(--orange)">📊 HFMDB STATS</div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:3px;color:var(--orange)">📊 HFMDB STATS</div>
       <div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-top:2px">${ms.length} total films · all time</div>
     </div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;margin-bottom:18px">
-      ${[[ms.length,'Total Films'],[withRat.length,'With Ratings'],[fieldTrips,'Field Trips'],[dblFeat,'Double Features'],[rewatched.length,'Multi-Watch'],[avgRtVal+'%','Avg RT'],[byLoc.length,'Venues'],[avgRatVal,'Avg ★ Rating']].map(([v,l])=>`
-        <div class="stat-card" style="padding:11px"><div class="stat-big">${v}</div><div class="stat-lbl2">${l}</div></div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;margin-bottom:16px">
+      ${[[ms.length,'Total Films'],[withRat.length,'With Ratings'],[fieldTrips,'Field Trips'],[dblFeat,'Double Features'],[rewatched.length,'Multi-Watch'],[avgRtVal+'%','Avg RT'],[byLoc.length,'Venues'],[avgRatVal,'Avg ★']].map(([v,l])=>`
+        <div class="stat-card" style="padding:10px"><div class="stat-big">${v}</div><div class="stat-lbl2">${l}</div></div>
       `).join('')}
     </div>
     <div class="stats-grid">
@@ -720,13 +913,14 @@ function renderStats(){
       ${blk('By Watch Year',byWatchYr.sort((a,b)=>a[0]-b[0]))}
       ${blk('Top Release Years',byRelYr.slice(0,15))}
       ${blk('By MPAA Rating',byMpaa)}
-      <div class="stat-card"><h3>Rotten Tomatoes Buckets</h3>
-        ${Object.entries(rtBuckets).map(([k,v])=>`
+      ${blk('Day of the Week',byDotwSorted)}
+      <div class="stat-card"><h3>Rotten Tomatoes</h3>
+        ${rtBuckets.map(([k,v])=>`
           <div class="sri"><span class="sri-lbl">${k}%</span><span class="sri-val">${v}</span></div>
           <div class="sbar"><div class="sbar-fill" style="width:${ms.length?Math.round(v/ms.length*100):0}%"></div></div>
         `).join('')}
       </div>
-      ${blk('Your Star Ratings',byRating)}
+      ${blk('Your Star Ratings',byRating.sort((a,b)=>parseFloat(b[0])-parseFloat(a[0])))}
       ${rewatched.length?`<div class="stat-card"><h3>🔁 Rewatched (${rewatched.length})</h3>
         ${rewatched.slice(0,15).map(x=>`<div class="sri"><span class="sri-lbl">${x.title}</span><span class="sri-val">${x.count}×</span></div>`).join('')}
       </div>`:''}
@@ -734,6 +928,7 @@ function renderStats(){
   `;
 }
 
+// ── HOF ──
 function renderHOF(){
   const hv=document.getElementById('hof-view');
   const titleMap={};
@@ -771,11 +966,20 @@ function renderHOF(){
   `;
 }
 
+// ── PAGINATION ──
 function renderPagination(){
   const src=view==='list'?listFiltered:filtered;
   const total=Math.ceil(src.length/pgSize);
   const pag=document.getElementById('pagination');
-  if(total<=1){pag.innerHTML=`<span class="pg-info">${src.length} films</span>`;return;}
+  const pgSizeHTML=`<select class="pgsize-sel" onchange="changePgSize(this.value)" title="Rows per page">
+    ${[25,50,75,100,150,200,250,300,350,400,450,500,600,700].map(n=>`<option value="${n}"${n===pgSize?' selected':''}>${n}</option>`).join('')}
+  </select>`;
+  if(!['sheet','card','list'].includes(view)){
+    pag.innerHTML=pgSizeHTML;return;
+  }
+  if(total<=1){
+    pag.innerHTML=`<span class="pg-info">${src.length} films</span>${pgSizeHTML}`;return;
+  }
   let h=`<button class="pg-btn" onclick="goPage(${page-1})" ${page===1?'disabled':''}>←</button>`;
   const s=Math.max(1,page-2),e=Math.min(total,page+2);
   if(s>1)h+=`<button class="pg-btn" onclick="goPage(1)">1</button>${s>2?'<span class="pg-info">…</span>':''}`;
@@ -783,6 +987,7 @@ function renderPagination(){
   if(e<total)h+=`${e<total-1?'<span class="pg-info">…</span>':''}<button class="pg-btn" onclick="goPage(${total})">${total}</button>`;
   h+=`<button class="pg-btn" onclick="goPage(${page+1})" ${page===total?'disabled':''}>→</button>`;
   h+=`<span class="pg-info">${((page-1)*pgSize)+1}–${Math.min(page*pgSize,src.length)} of ${src.length}</span>`;
+  h+=pgSizeHTML;
   pag.innerHTML=h;
 }
 function goPage(p){
@@ -791,15 +996,20 @@ function goPage(p){
   if(p<1||p>t)return;
   page=p;render();document.getElementById('content').scrollTop=0;
 }
-function changePgSize(){pgSize=parseInt(document.getElementById('pgsize-sel').value);page=1;render();}
+function changePgSize(v){pgSize=parseInt(v);page=1;render();}
 
+// ── VIEW / SIDEBAR ──
 function setView(v){
   view=v;
-  ['sheet','card','list','stats','hof'].forEach(x=>document.getElementById('nv-'+x).classList.toggle('active',x===v));
+  ['now','sheet','card','list','stats','hof'].forEach(x=>document.getElementById('nv-'+x).classList.toggle('active',x===v));
   page=1;render();
 }
-function toggleSidebar(){sidebarCollapsed=!sidebarCollapsed;document.getElementById('sidebar').classList.toggle('collapsed',sidebarCollapsed);}
+function toggleSidebar(){
+  sidebarCollapsed=!sidebarCollapsed;
+  document.getElementById('sidebar').classList.toggle('collapsed',sidebarCollapsed);
+}
 
+// ── ADMIN ──
 function toggleAdmin(){
   if(isAdmin){isAdmin=false;updateAdminUI();toast('Logged out');}
   else{document.getElementById('pin-modal').style.display='flex';document.getElementById('pin-input').value='';document.getElementById('pin-err').textContent='';setTimeout(()=>document.getElementById('pin-input').focus(),80);}
@@ -819,10 +1029,12 @@ function updateAdminUI(){
   document.getElementById('admin-lbl').textContent=isAdmin?'Logout Admin':'Admin Login';
 }
 
+// ── DOT MENUS ──
 function toggleDotMenu(id,e){e.stopPropagation();closeDotMenus();const dd=document.getElementById('dot-'+id);if(dd)dd.classList.add('open');}
 function closeDotMenus(){document.querySelectorAll('.dot-dropdown.open').forEach(d=>d.classList.remove('open'));}
 document.addEventListener('click',closeDotMenus);
 
+// ── DETAIL MODAL ──
 function openDetail(id){
   const m=movies.find(x=>x.id===id);if(!m)return;
   editingId=id;
@@ -837,7 +1049,7 @@ function openDetail(id){
   document.getElementById('dv-rt').innerHTML=rtH(m.rt);
   document.getElementById('dv-rating').innerHTML=starsH(m.rating)+(m.rating?` <span style="color:var(--dim);font-size:12px">${m.rating}/5</span>`:'');
   document.getElementById('dv-loc').innerHTML=m.location&&m.location!=='---'&&m.location!=='NONE'?`<span class="loc-tag">${m.location}</span>`:'—';
-  document.getElementById('dv-date').textContent=m.date||'—';
+  document.getElementById('dv-date').textContent=(m.date||'—')+(getDOTW(m)?' ('+getDOTW(m)+')':'');
   document.getElementById('dv-mpaa').innerHTML=mpaaH(m.mpaa)||'—';
   document.getElementById('dv-director').textContent=m.director||'—';
   document.getElementById('dv-runtime').textContent=m.runtime||'—';
@@ -903,6 +1115,7 @@ function fillForm(m){
 }
 function closeModal(){document.getElementById('edit-modal').style.display='none';editingId=null;}
 
+// ── DELETE ──
 function promptDelete(id){
   const m=movies.find(x=>x.id===id);if(!m)return;
   deleteId=id;
@@ -918,6 +1131,7 @@ async function confirmDelete(){
 }
 function closeDelModal(){document.getElementById('del-modal').style.display='none';deleteId=null;}
 
+// ── OMDB + TMDB ──
 async function doLookup(){
   const q=document.getElementById('lookup-q').value.trim();if(!q)return;
   const btn=document.getElementById('lookup-btn'),status=document.getElementById('lookup-status');
@@ -927,7 +1141,7 @@ async function doLookup(){
     const oRes=await fetch(`https://www.omdbapi.com/?t=${encodeURIComponent(q)}${yr?'&y='+yr:''}&apikey=${OMDB_KEY}`);
     const omdb=await oRes.json();
     if(omdb.Response==='True'){
-      const f=(id,v)=>{const el=document.getElementById(id);if(el)el.value=v||'';};
+      const f=(id,v)=>{const el=document.getElementById(id);if(el&&v)el.value=v;};
       f('f-movie',omdb.Title||q);f('f-year',omdb.Year);f('f-mpaa',normMpaa(omdb.Rated));
       f('f-director',omdb.Director);f('f-genre',omdb.Genre);f('f-plot',omdb.Plot);f('f-imdb',omdb.imdbID);
       const rts=(omdb.Ratings||[]).find(r=>r.Source==='Rotten Tomatoes');
@@ -941,7 +1155,7 @@ async function doLookup(){
       document.getElementById('f-tmdb').value=hit.id||'';
       if(hit.poster_path)document.getElementById('f-poster').value='https://image.tmdb.org/t/p/w500'+hit.poster_path;
       status.textContent='✅ Auto-filled from OMDb + TMDB. Review and save.';
-    }else if(omdb.Response==='True'){status.textContent='✅ OMDb filled. No TMDB poster found.';}
+    }else if(omdb.Response==='True'){status.textContent='✅ OMDb filled. No TMDB poster.';}
     else{status.textContent='❌ Not found. Fill manually.';}
   }catch(e){status.textContent='❌ Error: '+e.message;}
   btn.textContent='🎬 Lookup';btn.classList.remove('busy');
@@ -949,6 +1163,7 @@ async function doLookup(){
 
 function normMpaa(r){if(!r)return'';if(r==='PG-13'||r==='PG13')return'PG-13';if(r==='PG')return'PG';if(r==='R')return'R';if(['NR','NOT RATED','UNRATED'].includes(r))return'NR';return'';}
 
+// ── SAVE ──
 async function saveMovie(){
   const movie=document.getElementById('f-movie').value.trim();
   if(!movie){toast('❌ Movie title required','err');return;}
@@ -971,6 +1186,7 @@ async function saveMovie(){
   }catch(e){toast('❌ Save failed: '+e.message,'err');console.error(e);}
 }
 
+// ── HELPERS ──
 function esc(s){return(s||'').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 function rtH(rt){
   if(!rt||rt==='---')return'<span class="rt-none">—</span>';
@@ -988,7 +1204,7 @@ function starsH(r){
 }
 function parseDV(d){
   if(!d)return 0;
-  if(/^\d{4}-\d{2}-\d{2}/.test(d))return new Date(d).getTime();
+  if(/^\d{4}-\d{2}-\d{2}/.test(d)){const dt=new Date(d+'T12:00:00');return dt.getTime();}
   if(/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(d)){const[mo,dy,yr]=d.split('/');return new Date(+yr,+mo-1,+dy).getTime();}
   if(/^\d{4}$/.test(d))return new Date(+d,0,1).getTime();
   return 0;
