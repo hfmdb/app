@@ -92,14 +92,14 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;font
 .add-btn:hover{background:var(--orange2)}
 
 /* ── CONTENT ── */
-#content{flex:1;overflow-y:auto;overflow-x:auto;position:relative}
+#content{flex:1;overflow:hidden;display:flex;flex-direction:column;position:relative;min-height:0}
 .loading-overlay{position:absolute;inset:0;background:rgba(11,11,11,.85);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;z-index:50}
 .l-skull{font-size:48px;animation:pulse 1.2s ease-in-out infinite}
 @keyframes pulse{0%,100%{opacity:.3;transform:scale(.95)}50%{opacity:1;transform:scale(1.05)}}
 .l-txt{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:4px;color:var(--orange)}
 
 /* ── NOW VIEW ── */
-#now-view{padding:18px 20px;max-width:820px}
+#now-view{padding:18px 20px;max-width:820px;overflow-y:auto;flex:1}
 .now-section{margin-bottom:20px}
 .now-section-title{font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:3px;color:var(--muted);text-transform:uppercase;margin-bottom:9px;display:flex;align-items:center;gap:8px}
 .now-section-title span{height:1px;flex:1;background:var(--border)}
@@ -124,7 +124,7 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;font
 .nw-num{font-family:'Bebas Neue',sans-serif;font-size:12px;color:var(--muted);letter-spacing:1px;flex-shrink:0}
 
 /* ── SHEET ── */
-#sheet-view{min-width:860px}
+#sheet-view{overflow-y:auto;overflow-x:auto;flex:1;display:block;min-width:860px}
 .sheet-table{width:100%;border-collapse:collapse;font-family:'Barlow Condensed',sans-serif;font-size:13px}
 .sheet-table thead th{background:var(--surface2);padding:9px 10px;text-align:left;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);border-bottom:2px solid var(--orange);white-space:nowrap;position:sticky;top:0;z-index:2;cursor:pointer;user-select:none;transition:color .15s}
 .sheet-table thead th:hover{color:var(--orange)}
@@ -151,7 +151,7 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;font
 .notes-cell{max-width:130px;overflow:hidden;text-overflow:ellipsis;color:var(--dim);font-size:11px}
 
 /* ── CARD VIEW ── */
-#card-view{padding:14px 16px;display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:11px}
+#card-view{overflow-y:auto;flex:1;display:grid;padding:14px 16px;display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:11px}
 .movie-card{background:var(--surface);border:1px solid var(--border);border-radius:6px;overflow:hidden;transition:all .2s;cursor:pointer;position:relative}
 .movie-card:hover{border-color:var(--border2);transform:translateY(-2px);box-shadow:0 10px 28px rgba(0,0,0,.5)}
 .card-poster{width:100%;aspect-ratio:2/3;object-fit:cover;display:block;background:var(--surface2);cursor:zoom-in}
@@ -182,10 +182,9 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;font
 .lcol{padding:8px 5px;font-family:'Barlow Condensed',sans-serif;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);cursor:pointer;white-space:nowrap;user-select:none;flex-shrink:0;transition:color .15s}
 .lcol:hover{color:var(--orange)}
 /* ── LIST VIEW ── */
-#list-view{display:none;flex-direction:column;height:100%;overflow:hidden}
-#list-view.active-view{display:flex}
-#list-body{overflow-y:auto;overflow-x:auto;flex:1}
-.list-filter-bar{display:flex;gap:5px;padding:8px 12px;background:var(--surface);border-bottom:1px solid var(--border);flex-wrap:wrap;position:sticky;top:0;z-index:3}
+#list-view{display:none;flex-direction:column;flex:1;overflow:hidden}
+#list-body{overflow-y:auto;overflow-x:auto;flex:1;min-height:0}
+.list-filter-bar{display:flex;gap:5px;padding:8px 12px;background:var(--surface);border-bottom:1px solid var(--border);flex-wrap:wrap;flex-shrink:0}
 .lf-sel{background:var(--surface2);border:1px solid var(--border);color:var(--dim);padding:5px 7px;border-radius:4px;font-family:'Barlow Condensed',sans-serif;font-size:12px;outline:none;cursor:pointer;appearance:none;-webkit-appearance:none}
 .lf-sel:focus{border-color:var(--orange);color:var(--text)}
 .lf-sel option{background:#1a1a1a}
@@ -205,7 +204,7 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;font
 
 
 /* ── TIMELINE VIEW ── */
-#timeline-view{padding:16px 22px;max-width:660px}
+#timeline-view{padding:16px 22px;max-width:660px;overflow-y:auto;flex:1}
 .tl-year-group{margin-bottom:26px}
 .tl-year-lbl{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:3px;color:var(--orange);margin-bottom:10px;padding-left:22px}
 .tl-item{display:flex;position:relative;margin-bottom:2px}
@@ -228,8 +227,9 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;font
 .tl-cmeta{display:flex;gap:6px;align-items:center;margin-top:4px;flex-wrap:wrap}
 .tl-cloc{font-size:10px;color:var(--dim);font-family:'Barlow Condensed',sans-serif}
 .tl-empty{padding:3px 0 10px 2px;font-family:'Barlow Condensed',sans-serif;font-size:11px;color:var(--muted)}
+.tl-gap{padding:6px 0 6px 38px;font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:3px;color:var(--muted);border-left:1px solid var(--border);margin-left:14px}
 /* ── RELEASE VIEW ── */
-#release-view{padding:0;display:block}
+#release-view{padding:0;overflow-y:auto;flex:1}
 
 .rel-yr-divider{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:3px;color:var(--orange);padding:12px 16px 6px;border-bottom:1px solid var(--border);background:var(--surface2);position:sticky;top:0;z-index:2}
 .rel-row{display:flex;align-items:center;gap:12px;padding:8px 16px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .1s;font-family:'Barlow Condensed',sans-serif}
@@ -244,7 +244,7 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;font
 .rel-loc{font-size:11px;color:var(--muted);margin-top:1px}
 
 /* ── STATS ── */
-#stats-view{padding:16px 20px;max-width:1100px;display:none}
+#stats-view{padding:16px 20px;max-width:1100px;overflow-y:auto;flex:1}
 .stats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:12px;margin-bottom:18px}
 .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:13px;border-top:2px solid var(--orange)}
 .stat-card h3{font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:2px;color:var(--orange);margin-bottom:9px}
@@ -258,7 +258,7 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;font
 .stat-lbl2{font-family:'Barlow Condensed',sans-serif;font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase}
 
 /* ── HOF ── */
-#hof-view{padding:16px 20px;display:none}
+#hof-view{padding:16px 20px;overflow-y:auto;flex:1}
 .hof-hdr{margin-bottom:13px}
 .hof-hdr h2{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:3px;color:var(--orange)}
 .hof-hdr p{font-family:'Barlow Condensed',sans-serif;font-size:12px;color:var(--dim);margin-top:2px}
@@ -709,15 +709,21 @@ function sortBy(col){
 
 // ── RENDER ──
 function render(){
+  // Hide all views
   ALL_VIEWS.forEach(v=>{const el=document.getElementById(v.id+'-view');if(el)el.style.display='none';});
+  // Show current view with correct display type
   const el=document.getElementById(view+'-view');
-  if(el)el.style.display=view==='card'?'grid':view==='list'?'flex':'block';
+  if(el){
+    if(view==='card')el.style.display='grid';
+    else if(view==='list')el.style.display='flex';
+    else el.style.display='flex'; // flex:1 for all so they fill #content
+  }
   const hasPag=['sheet','card','list'].includes(view);
   document.getElementById('pagination').style.display='flex';
   if(view==='now')renderNow();
   else if(view==='sheet')renderSheet();
   else if(view==='card')renderCards();
-  else if(view==='list'){document.getElementById('list-view').style.display='flex';listFiltered=[...filtered];applyListFilters();return;}
+  else if(view==='list'){listFiltered=[...filtered];applyListFilters();return;}
   else if(view==='timeline')renderTimeline();
   else if(view==='release')renderRelease();
   else if(view==='stats')renderStats();
@@ -872,6 +878,8 @@ function renderTimeline(){
   const today=new Date();today.setHours(0,0,0,0);
   const thisMonday=getMondayOf(today);
   const MONTHS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+  // Build date→movies map
   const dateMap={};
   movies.forEach(m=>{
     const dv=m.watch_date||m.date;if(!dv)return;
@@ -884,52 +892,67 @@ function renderTimeline(){
     if(!dateMap[key])dateMap[key]=[];
     dateMap[key].push(m);
   });
-  const allDates=Object.keys(dateMap).sort();
-  if(!allDates.length){tv.innerHTML='<div class="empty" style="margin-top:60px"><div class="es">📆</div><p>NO DATA</p></div>';return;}
-  const firstDate=new Date(allDates[0]+'T12:00:00');
-  const startMonday=getMondayOf(firstDate);
-  const lastMovie=new Date(allDates[allDates.length-1]+'T12:00:00');
-  const endMonday=getMondayOf(today>lastMovie?today:lastMovie);
-  const allMondays=[];
-  let cur=new Date(startMonday);
-  while(cur<=endMonday){allMondays.push(new Date(cur));cur.setDate(cur.getDate()+7);}
-  allMondays.reverse();
-  // group by year
-  const byYear={};
-  allMondays.forEach(m=>{const yr=m.getFullYear();if(!byYear[yr])byYear[yr]=[];byYear[yr].push(m);});
-  const years=Object.keys(byYear).sort((a,b)=>b-a);
 
-  function mondayBlock(monday){
-    const key=monday.toISOString().slice(0,10);
+  // All movie week keys sorted newest first
+  const movieKeys=Object.keys(dateMap).sort().reverse();
+  if(!movieKeys.length){tv.innerHTML='<div style="padding:60px;text-align:center;color:var(--muted);font-family:Barlow Condensed,sans-serif;font-size:16px;letter-spacing:2px">NO DATA</div>';return;}
+
+  // Build output: for each movie week, show gap since previous, then the movie(s)
+  // "Gap" = number of empty Mondays between this week and the previous movie week
+  const thisMondayKey=thisMonday.toISOString().slice(0,10);
+  let html='';
+  let prevKey=null;
+
+  // Also include "this week" even if no movie
+  const allKeys=[...movieKeys];
+  if(!dateMap[thisMondayKey])allKeys.unshift(thisMondayKey); // add current week if no movie
+
+  allKeys.forEach((key,i)=>{
+    const monday=new Date(key+'T12:00:00');
+    monday.setHours(0,0,0,0);
     const ms=dateMap[key]||[];
-    const isNow=thisMonday.getTime()===monday.getTime();
+    const isNow=key===thisMondayKey;
     const dw=DOTW[monday.getDay()];
-    const disp=MONTHS[monday.getMonth()]+' '+monday.getDate();
-    if(!ms.length){
-      return`<div class="tl-item">
-        <div class="tl-dot"><div class="tl-dot-inner empty ${isNow?'now':''}"></div></div>
-        <div class="tl-content"><div class="tl-empty">${disp} ${dw}${isNow?' ← This Week':''}</div></div>
-      </div>`;
+    const disp=MONTHS[monday.getMonth()]+' '+monday.getDate()+', '+monday.getFullYear();
+
+    // Gap since prev
+    if(prevKey){
+      const prev=new Date(prevKey+'T12:00:00');
+      prev.setHours(0,0,0,0);
+      const gapWeeks=Math.round((new Date(prevKey+'T12:00:00')-monday)/1000/60/60/24/7);
+      if(gapWeeks>1){
+        html+=`<div class="tl-gap">· · · ${gapWeeks-1} week${gapWeeks-1>1?'s':''} · · ·</div>`;
+      }
     }
-    return`<div class="tl-item">
+    prevKey=key;
+
+    if(!ms.length){
+      // This week, no film
+      html+=`<div class="tl-item">
+        <div class="tl-dot"><div class="tl-dot-inner now"></div></div>
+        <div class="tl-content">
+          <div class="tl-datelbl" style="color:var(--orange)">${disp} · ${dw} ← This Week — TBD</div>
+        </div>
+      </div>`;
+      return;
+    }
+
+    html+=`<div class="tl-item">
       <div class="tl-dot"><div class="tl-dot-inner has ${isNow?'now':''}"></div></div>
       <div class="tl-content">
         <div class="tl-datelbl movie">${disp} · ${dw}${isNow?' ← This Week':''}</div>
         ${ms.map(m=>`<div class="tl-card" onclick="openDetail(${m.id})">
           ${m.poster_url?`<img class="tl-cposter" src="${m.poster_url}" loading="lazy" onerror="this.outerHTML='<div class=tl-cno>🎬</div>'">`:`<div class="tl-cno">🎬</div>`}
           <div class="tl-cinfo">
-            <div class="tl-ctitle">${m.movie} ${m.year?`<span style="color:var(--muted);font-size:11px">(${m.year})</span>`:''}</div>
+            <div class="tl-ctitle">${m.movie}${m.year?' ('+m.year+')':''}</div>
             <div class="tl-cmeta">${rtH(m.rt)} ${starsH(m.rating)} ${m.location&&m.location!=='---'&&m.location!=='NONE'?`<span class="tl-cloc">📍 ${m.location}</span>`:''} ${mpaaH(m.mpaa)}</div>
           </div>
         </div>`).join('')}
       </div>
     </div>`;
-  }
-  tv.innerHTML=years.map(yr=>`
-    <div class="tl-year-group">
-      <div class="tl-year-lbl">${yr}</div>
-      ${byYear[yr].map(mondayBlock).join('')}
-    </div>`).join('');
+  });
+
+  tv.innerHTML=html;
 }
 
 function renderRelease(){
