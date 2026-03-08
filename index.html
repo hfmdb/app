@@ -818,7 +818,7 @@ async function sbFetch(path, opts = {}) {
 
 async function loadMovies() {
   try {
-    const data = await sbFetch('movies?select=*&order=num.asc.nullslast,id.asc&limit=2000');
+    const data = await sbFetch('movies?select=*&order=watch_date.asc.nullslast,num.asc.nullslast,id.asc&limit=2000');
     movies = data || [];
     // populate location filter
     const locs = [...new Set(movies.map(m=>m.location).filter(l=>l&&l!=='---'&&l!=='NONE'&&l!==''))].sort();
@@ -858,9 +858,18 @@ function applyFilters() {
   // sort
   filtered.sort((a,b) => {
     let av = a[sortCol]??'', bv = b[sortCol]??'';
-    if (['num','year'].includes(sortCol))     { av=parseFloat(av)||0; bv=parseFloat(bv)||0; }
-    else if (sortCol==='rt')                  { av=parseInt(av)||0;   bv=parseInt(bv)||0;   }
-    else if (sortCol==='rating')              { av=parseFloat(av)||0; bv=parseFloat(bv)||0; }
+    if (['num','year'].includes(sortCol)) {
+      av=parseFloat(av)||0; bv=parseFloat(bv)||0;
+    } else if (sortCol==='rt') {
+      av=parseInt(av)||0; bv=parseInt(bv)||0;
+    } else if (sortCol==='rating') {
+      av=parseFloat(av)||0; bv=parseFloat(bv)||0;
+    } else if (sortCol==='date') {
+      // Use watch_date if available (proper ISO date from DB),
+      // otherwise parse the text date for correct chronological order
+      av = parseDateVal(a.watch_date || a.date);
+      bv = parseDateVal(b.watch_date || b.date);
+    }
     if (av<bv) return -sortDir; if (av>bv) return sortDir; return 0;
   });
 
@@ -883,6 +892,35 @@ function updateStats() {
   document.getElementById('s-showing').textContent = filtered.length;
   const ratings = filtered.map(m=>parseFloat(m.rating)).filter(r=>!isNaN(r)&&r>0);
   document.getElementById('s-avg').textContent = ratings.length ? (ratings.reduce((a,b)=>a+b,0)/ratings.length).toFixed(1) : '—';
+}
+
+// Converts display date string to ISO YYYY-MM-DD for DB storage
+function parseDateToISO(d) {
+  if (!d) return null;
+  if (/^\d{4}-\d{2}-\d{2}$/.test(d)) return d;
+  if (/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(d)) {
+    const [mo,dy,yr] = d.split('/');
+    return `${yr}-${mo.padStart(2,'0')}-${dy.padStart(2,'0')}`;
+  }
+  if (/^\d{4}$/.test(d)) return `${d}-01-01`;
+  return null;
+}
+
+// ─── DATE PARSE HELPER ───
+// Returns a sortable number from various date formats:
+// ISO 'YYYY-MM-DD', 'M/D/YYYY', 'MM/DD/YYYY', 'YYYY'
+function parseDateVal(d) {
+  if (!d) return 0;
+  // ISO date from DB: 2010-05-23
+  if (/^\d{4}-\d{2}-\d{2}/.test(d)) return new Date(d).getTime();
+  // M/D/YYYY or MM/DD/YYYY
+  if (/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(d)) {
+    const [mo,dy,yr] = d.split('/');
+    return new Date(+yr, +mo-1, +dy).getTime();
+  }
+  // Year only
+  if (/^\d{4}$/.test(d)) return new Date(+d, 0, 1).getTime();
+  return 0;
 }
 
 // ─── SORT ───
@@ -1196,10 +1234,12 @@ function normMpaa(r) {
 async function saveMovie() {
   const movie=document.getElementById('f-movie').value.trim();
   if(!movie){toast('❌ Movie title required','err');return;}
+  const dateStr = document.getElementById('f-date').value.trim()||null;
   const payload={
     movie,
     year:  document.getElementById('f-year').value.trim()||null,
-    date:  document.getElementById('f-date').value.trim()||null,
+    date:  dateStr,
+    watch_date: dateStr ? parseDateToISO(dateStr) : null,
     mpaa:  document.getElementById('f-mpaa').value||null,
     rt:    document.getElementById('f-rt').value.trim()||null,
     rating:parseFloat(document.getElementById('f-rating').value)||null,
