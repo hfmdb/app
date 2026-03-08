@@ -182,7 +182,9 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;font
 .lcol{padding:8px 5px;font-family:'Barlow Condensed',sans-serif;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);cursor:pointer;white-space:nowrap;user-select:none;flex-shrink:0;transition:color .15s}
 .lcol:hover{color:var(--orange)}
 /* ── LIST VIEW ── */
-#list-view{display:none}
+#list-view{display:none;flex-direction:column;height:100%;overflow:hidden}
+#list-view.active-view{display:flex}
+#list-body{overflow-y:auto;overflow-x:auto;flex:1}
 .list-filter-bar{display:flex;gap:5px;padding:8px 12px;background:var(--surface);border-bottom:1px solid var(--border);flex-wrap:wrap;position:sticky;top:0;z-index:3}
 .lf-sel{background:var(--surface2);border:1px solid var(--border);color:var(--dim);padding:5px 7px;border-radius:4px;font-family:'Barlow Condensed',sans-serif;font-size:12px;outline:none;cursor:pointer;appearance:none;-webkit-appearance:none}
 .lf-sel:focus{border-color:var(--orange);color:var(--text)}
@@ -227,8 +229,20 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;font
 .tl-cloc{font-size:10px;color:var(--dim);font-family:'Barlow Condensed',sans-serif}
 .tl-empty{padding:3px 0 10px 2px;font-family:'Barlow Condensed',sans-serif;font-size:11px;color:var(--muted)}
 /* ── RELEASE VIEW ── */
-#release-view{padding:14px 16px;display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:11px}
-.rel-yr-divider{grid-column:1/-1;font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:3px;color:var(--orange);padding:10px 0 4px;border-bottom:1px solid var(--border);margin-bottom:2px}
+#release-view{padding:0;display:block}
+
+.rel-yr-divider{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:3px;color:var(--orange);padding:12px 16px 6px;border-bottom:1px solid var(--border);background:var(--surface2);position:sticky;top:0;z-index:2}
+.rel-row{display:flex;align-items:center;gap:12px;padding:8px 16px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .1s;font-family:'Barlow Condensed',sans-serif}
+.rel-row:hover{background:var(--og)}
+.rel-poster{width:28px;height:42px;object-fit:cover;border-radius:2px;flex-shrink:0}
+.rel-poster-ph{width:28px;height:42px;background:var(--surface3);border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:12px;opacity:.4;flex-shrink:0}
+.rel-main{flex:1;min-width:0}
+.rel-title{font-size:15px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-bottom:3px}
+.rel-meta{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.rel-right{text-align:right;flex-shrink:0;min-width:110px}
+.rel-watched{font-size:11px;color:var(--dim)}
+.rel-loc{font-size:11px;color:var(--muted);margin-top:1px}
+
 /* ── STATS ── */
 #stats-view{padding:16px 20px;max-width:1100px;display:none}
 .stats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:12px;margin-bottom:18px}
@@ -481,7 +495,7 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;font
           <option>Thu</option><option>Fri</option><option>Sat</option><option>Sun</option>
         </select>
       </div>
-      <div id="list-col-heads" style="display:flex;background:var(--surface2);border-bottom:2px solid var(--orange);padding:0 12px;overflow-x:auto;flex-shrink:0;min-width:0">
+      <div id="list-col-heads" style="display:flex;background:var(--surface2);border-bottom:2px solid var(--orange);padding:0 12px;overflow-x:auto;flex-shrink:0;min-width:0;z-index:3">
         <div class="lcol" style="width:34px" onclick="sortList('num')"># <span id="lsa-num"></span></div>
         <div class="lcol" style="flex:1;min-width:140px" onclick="sortList('movie')">Movie <span id="lsa-movie"></span></div>
         <div class="lcol" style="width:90px" onclick="sortList('date')">Date <span id="lsa-date"></span></div>
@@ -684,9 +698,7 @@ function clearFilters(){
   applyFilters();
 }
 function updateStats(){
-  document.getElementById('s-showing').textContent=filtered.length;
-  const rs=filtered.map(m=>parseFloat(m.rating)).filter(r=>!isNaN(r)&&r>0);
-  document.getElementById('s-avg').textContent=rs.length?(rs.reduce((a,b)=>a+b,0)/rs.length).toFixed(1):'—';
+
 }
 function sortBy(col){
   if(sortCol===col)sortDir*=-1;else{sortCol=col;sortDir=1;}
@@ -699,13 +711,13 @@ function sortBy(col){
 function render(){
   ALL_VIEWS.forEach(v=>{const el=document.getElementById(v.id+'-view');if(el)el.style.display='none';});
   const el=document.getElementById(view+'-view');
-  if(el)el.style.display=['card','release'].includes(view)?'grid':'block';
+  if(el)el.style.display=view==='card'?'grid':view==='list'?'flex':'block';
   const hasPag=['sheet','card','list'].includes(view);
   document.getElementById('pagination').style.display='flex';
   if(view==='now')renderNow();
   else if(view==='sheet')renderSheet();
   else if(view==='card')renderCards();
-  else if(view==='list'){listFiltered=[...filtered];applyListFilters();return;}
+  else if(view==='list'){document.getElementById('list-view').style.display='flex';listFiltered=[...filtered];applyListFilters();return;}
   else if(view==='timeline')renderTimeline();
   else if(view==='release')renderRelease();
   else if(view==='stats')renderStats();
@@ -891,7 +903,7 @@ function renderTimeline(){
     const key=monday.toISOString().slice(0,10);
     const ms=dateMap[key]||[];
     const isNow=thisMonday.getTime()===monday.getTime();
-    const dw=DOTW_NAMES[monday.getDay()];
+    const dw=DOTW[monday.getDay()];
     const disp=MONTHS[monday.getMonth()]+' '+monday.getDate();
     if(!ms.length){
       return`<div class="tl-item">
@@ -922,28 +934,37 @@ function renderTimeline(){
 
 function renderRelease(){
   const rv=document.getElementById('release-view');
-  const hasYear=[...filtered].filter(m=>m.year&&/^\d{4}$/.test(m.year.toString()))
-    .sort((a,b)=>(parseInt(b.year)||0)-(parseInt(a.year)||0)||(a.movie||'').localeCompare(b.movie||''));
-  const noYear=[...filtered].filter(m=>!m.year||!/^\d{4}$/.test(m.year.toString()));
-  const all=[...hasYear,...noYear];
-  if(!all.length){rv.innerHTML='<div class="empty"><div class="es">🎞</div><p>NO FILMS FOUND</p></div>';return;}
+  // Sort by release year desc, then month from date, then title
+  const sorted=[...filtered].sort((a,b)=>{
+    const ay=parseInt(a.year)||0, by2=parseInt(b.year)||0;
+    if(by2!==ay)return by2-ay;
+    return(a.movie||'').localeCompare(b.movie||'');
+  });
+  if(!sorted.length){rv.innerHTML='<div style="padding:40px;text-align:center;color:var(--muted);font-family:Barlow Condensed,sans-serif;font-size:16px;letter-spacing:2px">NO FILMS FOUND</div>';return;}
   let lastYr=null;
-  rv.innerHTML=all.map(m=>{
-    const yr=m.year&&/^\d{4}$/.test(m.year.toString())?m.year:'Unknown';
+  const MONTHS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  rv.innerHTML=sorted.map(m=>{
+    const yr=m.year&&/^\d{4}$/.test(String(m.year))?String(m.year):'Unknown';
     let div='';
     if(yr!==lastYr){lastYr=yr;div=`<div class="rel-yr-divider">${yr}</div>`;}
-    return div+`<div class="movie-card" onclick="openDetail(${m.id})">
-      ${m.type?`<div class="card-type-badge">${m.type}</div>`:''}
-      ${m.poster_url?`<img class="card-poster" src="${m.poster_url}" loading="lazy" onclick="event.stopPropagation();openLightbox('${m.poster_url}')" onerror="this.outerHTML='<div class=card-no-poster><div class=cnp-skull>💀</div><div class=cnp-title>${esc(m.movie)}</div></div>'">`:`<div class="card-no-poster"><div class="cnp-skull">💀</div><div class="cnp-title">${m.movie}</div></div>`}
-      <div class="card-body">
-        <div class="card-num">${m.date?'📅 '+m.date:''}</div>
-        <div class="card-title">${m.movie}</div>
-        <div class="card-meta">${rtH(m.rt)} ${mpaaH(m.mpaa)}</div>
-        <div style="margin-bottom:4px">${starsH(m.rating)}</div>
-        <div class="card-bot">
-          <span class="card-loc">${m.location&&m.location!=='---'&&m.location!=='NONE'?'📍 '+m.location:''}</span>
-          <span class="card-date">${m.year||''}</span>
-        </div>
+    // parse watch month from date
+    let watchMo='';
+    const dv=m.watch_date||m.date;
+    if(dv){
+      let dt;
+      if(/^\d{4}-\d{2}-\d{2}/.test(dv))dt=new Date(dv+'T12:00:00');
+      else if(/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(dv)){const[mo,dy,yrr]=dv.split('/');dt=new Date(+yrr,+mo-1,+dy,12);}
+      if(dt)watchMo=MONTHS[dt.getMonth()]+' '+dt.getFullYear();
+    }
+    return div+`<div class="rel-row" onclick="openDetail(${m.id})">
+      ${m.poster_url?`<img class="rel-poster" src="${m.poster_url}" loading="lazy" onerror="this.style.display='none'">`:`<div class="rel-poster-ph">🎬</div>`}
+      <div class="rel-main">
+        <div class="rel-title">${m.movie}</div>
+        <div class="rel-meta">${rtH(m.rt)} ${mpaaH(m.mpaa)} ${starsH(m.rating)}</div>
+      </div>
+      <div class="rel-right">
+        <div class="rel-watched">${watchMo?'watched '+watchMo:''}</div>
+        <div class="rel-loc">${m.location&&m.location!=='---'&&m.location!=='NONE'?'📍 '+m.location:''}</div>
       </div>
     </div>`;
   }).join('');
